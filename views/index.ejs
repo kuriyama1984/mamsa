@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>チャットサンプル</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/javascripts/namespace.js"></script>
+    <script src="/javascripts/maps.js"></script>
+    <script src="/javascripts/eventBox.js"></script>
+    <script src="/javascripts/jquery-1.8.0.js"></script>
+    <script src="/javascripts/client.js"></script>
+    
+    <!--script src="/javascripts/index.js"></script-->
+
+
+
+  </head>
+  <body>
+    <h1>チャットサンプル</h1>
+    <div><input type="text" id="input" /><button id="send">入力内容を自分以外のみんなへ</button></div>
+	<div id="list"></div>
+
+
+  <div><input type="text" id="input2" /><button id="send2">入力とmongoDBデータを自分を含めてみんなへ</button></div>
+
+
+
+
+  <form action="/room" method="POST">
+    <div><button id="send3">roomへ</button></div>
+  </form>
+
+
+
+
+
+
+  <h1>Hello World!</h1>
+  <input type="text" id="message" /><button id="sendBtn">send</button><br />
+  <div id="res"></div>
+
+
+
+
+
+
+  <div id="mapBody" style="position: relative;"><canvas id="myCanvas" width="2000" height="1600">
+    Canvasが利用できるブラウザを使用してください。
+  </canvas></div>
+  <div id="status"></div>
+
+
+
+  <div><img id="newImg"></div>
+
+
+  </body>
+</html>

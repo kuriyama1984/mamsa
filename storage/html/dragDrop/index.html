@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>selectSimple</title>
+    <script type="text/javascript" src="../../dist/namespace.js"></script>
+    <script type="text/javascript" src="./dragDrop_type1DC.js"></script>
+    <script type="text/javascript" src="./dragDrop_type1CB.js"></script>
+    <script type="text/javascript" src="./dragDrop.js"></script>
+    <script>
+        var type1CB = Object.create(storage.dragDrop_type1CB.prototype);
+        var dragDrop = Object.create(storage.dragDrop.prototype);
+
+        window.onload = function () {
+
+            type1CB.onUpload = function (type1DCs) {
+                console.log(type1DCs);
+            };
+            dragDrop.setType1("drop", type1CB);
+        };
+    </script>
+</head>
+<body>
+    <h1>drag and drop</h1>
+
+    <div id = "drop" style="width: 500px; height: 200px; border: 4px dashed gray;position:relative;">
+        ここにファイルをドラッグ＆ドロップしてください。
+    </div>
+
+    <div id="disp"></div>
+
+
+
+</body>
+</html>

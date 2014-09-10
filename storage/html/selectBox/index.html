@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>selectSimple</title>
+    <script type="text/javascript" src="../../dist/namespace.js"></script>
+    <script type="text/javascript" src="./selectBox_type1CB.js"></script>
+    <script type="text/javascript" src="./selectBox.js"></script>
+    <script>
+        var type1CB = Object.create(storage.selectBox_type1CB.prototype);
+        var selectBox = Object.create(storage.selectBox.prototype);
+
+        window.onload = function () {
+
+            // var callback
+            type1CB.onChange = function (selectedId) {
+                alert('changed !! > ' + selectedId);
+            }
+
+            // set select data: {id: value}
+            var optionList = [
+                {value:'noSelectId',name:'---'}
+                ,{value:'appleId',name:'apple'}
+                ,{value:'orangeId',name:'orange'}
+                ,{value:'strawberryId',name:'strawberry'}
+            ];
+
+            // set select box type1
+            selectBox.setType1(optionList, 'disp', 'selectId', type1CB);
+        };
+    </script>
+</head>
+<body>
+    <h1>select box simple</h1>
+    <div id="disp"></div>
+
+</body>
+</html>

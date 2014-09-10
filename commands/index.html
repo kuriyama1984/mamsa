@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <script>
+    var database = {};
+  </script>
+
+  <script type="text/javascript" src="./data/0_Template/data.js"></script>
+  <script type="text/javascript" src="./data/mongoDB/data.js"></script>
+  <script type="text/javascript" src="./data/yuidoc/data.js"></script>
+  <script type="text/javascript" src="./data/npm/data.js"></script>
+
+  <script>
+
+    var onload = function () {
+
+        // add select tag
+        var tileSelect = "<select id='tileSelect' onchange='commandSelect()' >";
+        for (var key in database) {
+
+            tileSelect += "<option value=" + key + ">" + key + "</option>";
+        };
+        tileSelect += "</select>";
+        document.getElementById("tileList").innerHTML = tileSelect;
+
+        // set command select tag
+        commandSelect();
+    };
+
+
+    var commandSelect = function () {
+
+        // selected key
+        var tileSelect = document.getElementById("tileSelect");
+        var key = tileSelect.options[tileSelect.selectedIndex].value;
+
+        // add select tag
+        var commandSelect = "<select id='commandSelect' onchange='commandContent()'>";
+        for (var i = 0; i < database[key].length; i++) {
+
+            commandSelect += "<option value=" + i + ">" + key + " ： " + database[key][i].title + "</option>";
+        };
+        commandSelect += "</select>";
+        document.getElementById("commandList").innerHTML = commandSelect;
+
+        // set command contents
+        commandContent();
+    };
+
+
+    var commandContent = function () {
+
+        // selected key
+        var tileSelect = document.getElementById("tileSelect");
+        var key = tileSelect.options[tileSelect.selectedIndex].value;
+
+        // selected num
+        var commandSelect = document.getElementById("commandSelect");
+        var num = commandSelect.options[commandSelect.selectedIndex].value;
+
+        document.getElementById("title").innerHTML = key + " ： <a href='" + database[key][num].url + "' target='_blank'>" + database[key][num].title + "</a>";
+        document.getElementById("when").innerHTML = database[key][num].when;
+        document.getElementById("how").innerHTML = database[key][num].how;
+
+        // ser command
+        var commands = "";
+        for (var i = 0; i < database[key][num].commands.length; i++) {
+            commands += "<div>// " + database[key][num].commands[i][0] + "</div>";
+            commands += "<div>" + database[key][num].commands[i][1] + "</div>";
+            commands += "<br />";
+        }
+        document.getElementById("commands").innerHTML = commands;
+    };
+
+
+
+
+
+
+
+
+  </script>
+
+  <style type="text/css">
+  <!--
+    table { border: 1px #000000 solid;
+            border-collapse: collapse; }
+    td { border: 1px #000000 solid; }
+  -->
+  </style>
+
+</head>
+<body onLoad="onload()">
+  <h1>comannd check</h1>
+
+  <div id="tileList"></div>
+  <div id="commandList"></div>
+  <br />
+
+
+  <table style="font:18px;">
+    <tr><td><div id="when"></div></td><td style="width:800px;"><div id="title"></div></td></tr>
+    <tr><td colspan="2"><div id="how"></div></td></tr>
+    <tr><td colspan="2"><div id="commands"></div></td></tr>
+  </table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

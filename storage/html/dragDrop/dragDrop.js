@@ -22,20 +22,15 @@
         * setType1 is drag & drop files
         *
         * @method setType1
-        * @param {string} tagId is for setting
-        * @param {dragDrop_type1CB} callback
+        * @param {string} tagId is for setting like div.id
+        * @param {function} callback([object])
+        * @param {string} dispId is for display like div.id (optional)
         * @return {int} status
         */
-        setType1: function (tagId, callback) {
+        setType1: function (tagId, callback, dispId) {
 
             if (!(window.File && window.FileReader && window.FileList && window.Blob)) {
                 return 7; // unsupported browser
-            }
-
-            if (typeof(tagId) !== 'string'
-                || !storage.dragDrop_type1CB.prototype.isPrototypeOf(callback)
-                ) {
-                return 3; // illegal arg status
             }
 
             var self = this;
@@ -49,23 +44,22 @@
             element.addEventListener('drop', function (event) {
 
                 event.preventDefault(); // not to display file image
-                self._handleType1(event, callback);
+                self._handleType1(event, dispId, callback);
             }, false);
 
             return 0; // success OK
         },
 
-        _handleType1: function (e, callback) {
+        _handleType1: function (e, dispId, callback) {
 
             var files = e.dataTransfer.files;
-            var disp = document.getElementById('disp');
-            var type1DCs = [];
+            var output = [];
             var self = this;
             var cnt = 1;
 
             for (var i = 0; i < files.length; i++) {
 
-                var type1DC = Object.create(storage.dragDrop_type1DC.prototype);
+                var data = {};
 
                 // only image or text
                 var f = files[i];
@@ -81,23 +75,24 @@
                     console.log('read error');
                 };
 
-                type1DC.name = f.name;
-                type1DC.size = f.size;
-                type1DC.type = f.type;
+                data.name = f.name;
+                data.size = f.size;
+                data.type = f.type;
 
                 // image file
                 if (f.type.match('image.*')) {
 
                     reader.onload = function (evt) {
+                        if (typeof(dispId) === "string") {
+                            document.getElementById('disp').innerHTML += '<img id="id' + i + '" src="' + evt.target.result + '" /><br />'
+                        }
                         // set img binary data
-                        var imgTag = '<img id="id' + i + '" src="' + evt.target.result + '" /><br />'
-                        disp.innerHTML += imgTag;
-                        type1DC.image = evt.target.result;
-                        type1DCs.push(type1DC);
+                        data.image = evt.target.result;
+                        output.push(data);
 
                         // callback if last
                         if (cnt === files.length) {
-                            callback.onUpload(type1DCs);
+                            callback(output);
                         }
                         cnt++;
                     };
@@ -110,14 +105,16 @@
                 if (f.type.match('text.*')) {
 
                     reader.onload = function (evt) {
+                        if (typeof(dispId) === "string") {
+                            document.getElementById('disp').innerHTML += '<span id="id' + i + '">' + reader.result + '</span>';
+                        }
                         // set img binary data
-                        disp.innerHTML += '<span id="id' + i + '">' + reader.result + '</span>';
-                        type1DC.text = reader.result;
-                        type1DCs.push(type1DC);
+                        data.text = reader.result;
+                        output.push(data);
 
                         // callback if last
                         if (cnt === files.length) {
-                            callback.onUpload(type1DCs);
+                            callback(output);
                         }
                         cnt++;
                     };

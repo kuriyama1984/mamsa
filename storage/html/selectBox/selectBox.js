@@ -23,7 +23,7 @@
         * @param {optionList} [{name:'str',value:'str'}] : optionList is for select options
         * @param {string} tagId is for setting
         * @param {string} selectId is for select
-        * @param {selectBox_type1CB} callback
+        * @param {function} callback(optonId)
         * @return {int} status
         */
         setType1: function (optionList, tagId, selectId, callback) {
@@ -38,10 +38,7 @@
                 return 3; // illegal arg status
             }
 
-            if (typeof(tagId) !== 'string'
-                || typeof(selectId) !== 'string'
-                || !storage.selectBox_type1CB.prototype.isPrototypeOf(callback)
-                ) {
+            if (typeof(tagId) !== 'string' || typeof(selectId) !== 'string') {
                 return 3; // illegal arg status
             }
 
@@ -54,8 +51,8 @@
             htmlTag.innerHTML = selectTag;
 
             document.getElementById(selectId).addEventListener("change", function () {
-                var selectedId = document.getElementById(selectId).options[document.getElementById(selectId).selectedIndex].value;
-                callback.onChange(selectedId);
+                var optonId = document.getElementById(selectId).options[document.getElementById(selectId).selectedIndex].value;
+                callback(optonId);
             }, false);
 
             return 0; // success OK

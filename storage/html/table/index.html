@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>selectSimple</title>
+    <script type="text/javascript" src="../../lib/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../../dist/namespace.js"></script>
+    <script type="text/javascript" src="./table.js"></script>
+    <script>
+        var table = Object.create(storage.table.prototype);
+
+        window.onload = function () {
+
+            var data = [
+                [
+                    ['<div>Apple<br />---------<a href="https://www.google.co.jp">link</a><p>this is test</p></div>', 150, 50],
+                    ['<div>Peach<br />---------<a href="https://www.google.co.jp">link</a><p>this is test</p></div>', 100, 50],
+                    ['<div>Orange<br />---------<a href="https://www.google.co.jp">link</a><p>this is test</p></div>', 150, 50],
+                    ['<div>Banana<br />---------<a href="https://www.google.co.jp">link</a><p>this is test</p></div>', 150, 50]
+                ],
+                [
+                    ['<div>Sour<br />---------<a href="https://www.google.co.jp">link</a><p>this is testthis is testthis is testthis is testthis is testthis is testthis is testthis is test</p></div>', 150, 130],
+                    ['<div>Sweet<br />---------<a href="https://www.google.co.jp">link</a><p>this is test</p></div>', 100, 130],
+                    ['<div>Juicy<br />---------<a href="https://www.google.co.jp">link</a><p>this is test</p></div>', 150, 130],
+                    ['<div>Tropical<br />---------<a href="https://www.google.co.jp">link</a><p>this is test</p></div>', 150, 130]
+                ],
+                [
+                    ['<div>200yen<br />---------<a href="https://www.google.co.jp">link</a><p>this is test</p></div>', 150, 50],
+                    ['<div>150yen<br />---------<a href="https://www.google.co.jp">link</a><p>this is test</p></div>', 100, 50],
+                    ['<div>100yen<br />---------<a href="https://www.google.co.jp">link</a><p>this is test</p></div>', 150, 50],
+                    ['<div>80yen<br />---------<a href="https://www.google.co.jp">link</a><p>this is test</p></div>', 150, 50]
+                ]
+            ];
+
+            // set clever table type1
+            table.setType1('disp' ,data);
+        };
+    </script>
+</head>
+<body>
+    <h1>clever table</h1>
+    <div id="disp"></div>
+
+</body>
+</html>

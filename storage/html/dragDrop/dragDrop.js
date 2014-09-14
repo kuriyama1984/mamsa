@@ -33,6 +33,13 @@
                 return 7; // unsupported browser
             }
 
+            if (typeof(tagId) !== 'string' ||
+                (typeof(dispId) !== 'string' && typeof(dispId) !== 'undefined') ||
+                typeof(callback) !== 'function'
+                ) {
+                return 3; // illegal arg status
+            }
+
             var self = this;
             var element = window.document.getElementById(tagId);
 

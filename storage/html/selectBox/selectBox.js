@@ -38,7 +38,9 @@
                 return 3; // illegal arg status
             }
 
-            if (typeof(tagId) !== 'string' || typeof(selectId) !== 'string') {
+            if (typeof(tagId) !== 'string' ||
+                typeof(selectId) !== 'string' ||
+                typeof(callback) !== 'function') {
                 return 3; // illegal arg status
             }
 

@@ -38,7 +38,7 @@
             return widthMax;
         },
 
-        create: function (x, y, s, text, textArray, color) {
+        create: function (x, y, s, text, textArray, color, events) {
 
             // 描画用タグ
             canvasDiv = document.createElement('div');
@@ -83,9 +83,12 @@
             // 文字の描画
             context.translate(0 , -5);
             context.fillStyle = "#000000";
-            context.font = "normal bold " + 10 * "pt 'ＭＳ Ｐ明朝'";
+            context.font = "normal bold " + 8 + "pt 'ＭＳ Ｐ明朝'";
             context.fillText(text,  10 , 18);
             context.translate(0 , 5);
+
+            // mouse field (0:outside, 1:rightTop, 2:rightBottom, 3:middleTop, 4:middleBottom, 5:elsePosition)
+            var mouseField = 0;
 
             // this
             var me = this;
@@ -93,27 +96,98 @@
             // move event
             canvasElement.addEventListener("mousemove", function(e) {
 
-                var rect = e.target.getBoundingClientRect();
-                mouseX = e.clientX - rect.left;
-                mouseY = e.clientY - rect.top;
-
-
+                me.eventsCallBack(e, canvasDiv, function () {
+                    // rightTop
+                    me.mouseOut(e, events, 1);
+                    events.mousemoveRightTop();
+                }, function () {
+                    // rightBottom
+                    me.mouseOut(e, events, 2);
+                    events.mousemoveRightBottom();
+                }, function () {
+                    // middleTop
+                    me.mouseOut(e, events, 3);
+                    events.mousemoveMiddleTop();
+                }, function () {
+                    // middleBottom
+                    me.mouseOut(e, events, 4);
+                    events.mousemoveMiddleBottom();
+                }, function () {
+                    // elsePosition
+                    me.mouseOut(e, events, 5);
+                    events.mousemoveElsePosition();
+                }, function () {
+                    // everyPosition
+                    events.mousemoveEveryPosition();
+                });
 
                 me.showPopUp(mouseX, mouseY, s, textArray);
-
 
                 // get mouse position
                 // var mousePosition = me.getMousePosition(e);
                 me.showBox(x, y, s, text, textArray, '#FF0000');
 
-
             }, true);
+
+            // mousedown
+            canvasElement.addEventListener("mousedown", function(e) {
+
+                if (e.button === 0) {
+
+                    me.eventsCallBack(e, canvasDiv, function () {
+                        // rightTop
+                        events.clickRightTop();
+                    }, function () {
+                        // rightBottom
+                        events.clickRightBottom();
+                    }, function () {
+                        // middleTop
+                        events.clickMiddleTop();
+                    }, function () {
+                        // middleBottom
+                        events.clickMiddleBottom();
+                    }, function () {
+                        // elsePosition
+                        events.clickElsePosition();
+                    }, function () {
+                        // everyPosition
+                        events.clickEveryPosition();
+                    });
+
+                    me.moveBox(x, y, s);
+
+                }
+            }, true);
+
+            this.clickRight(function (e) {
+
+                me.eventsCallBack(e, canvasDiv, function () {
+                    // rightTop
+                    events.clickRightRightTop();
+                }, function () {
+                    // rightBottom
+                    events.clickRightRightBottom();
+                }, function () {
+                    // middleTop
+                    events.clickRightMiddleTop();
+                }, function () {
+                    // middleBottom
+                    events.clickRightMiddleBottom();
+                }, function () {
+                    // elsePosition
+                    events.clickRightElsePosition();
+                }, function () {
+                    // everyPosition
+                    events.clickRightEveryPosition();
+                });
+
+                me.popUpFlag = false;
+            });
 
             // move out
             canvasElement.addEventListener("mouseout", function(e) {
-                var rect = e.target.getBoundingClientRect();
-                mouseX = e.clientX - rect.left;
-                mouseY = e.clientY - rect.top;
+
+                me.mouseOut(e, events, 0);
 
                 me.hidePopUp();
 
@@ -121,25 +195,6 @@
                 // var mousePosition = me.getMousePosition(e);
                 me.showBox(x, y, s, text, textArray, '#0000FF');
             }, true);
-
-            callbackCR = {
-
-                click : function () {
-                    me.popUpFlag = false;
-                }
-            };
-            this.clickRight(callbackCR);
-
-            // mousedown
-            canvasElement.addEventListener("mousedown", function(e) {
-                var rect = e.target.getBoundingClientRect();
-                mouseX = e.clientX - rect.left;
-                mouseY = e.clientY - rect.top;
-
-                me.moveBox(x, y, s);
-            }, true);
-
-
 
 
 
@@ -274,30 +329,100 @@
                     document.addEventListener('mousedown', function(e) {
                         // Operaの場合はcontextmenuをサポートしていないので、buttonから判定する
                         if(e.button == 2) {
-                            callback.click();
+                            callback(e);
                         }
                         e.preventDefault();
                     }, false);
                 } else {
                     // Firefox, Safari
                     document.addEventListener("contextmenu", function(e) {
-                        callback.click();
+                        callback(e);
                         e.preventDefault();
                     }, false);
                 }
             } else {
                 // IE
                 document.attachEvent("oncontextmenu", function(e) {  
-                    callback.click();
+                    callback(e);
                     e.returnValue = false;
                 });
             }
+        },
+
+        mouseOut: function (e, events, field) {
+
+            if (this.mouseField !== field) {
+
+                switch (this.mouseField) {
+                    case 1:
+                        events.mouseoutRightTop();
+                        break;
+                    case 2:
+                        events.mouseoutRightBottom();
+                        break;
+                    case 3:
+                        events.mouseoutMiddleTop();
+                        break;
+                    case 4:
+                        events.mouseoutMiddleBottom();
+                        break;
+                    case 5:
+                        events.mouseoutElsePosition();
+                        break;
+                }
+
+                this.mouseField = field;
+
+                switch (field) {
+                    case 0:
+                        events.mouseoutEveryPosition();
+                        break;
+                }
+            }
+        },
+
+        eventsCallBack: function (e, canvasDiv, rightTop, rightBottom, middleTop, middleBottom, elsePosition, everyPosition) {
+
+            var rect = e.target.getBoundingClientRect();
+            mouseX = e.clientX - rect.left;
+            mouseY = e.clientY - rect.top;
+
+            // right top box
+            if (
+                (mouseX > parseInt(canvasDiv.style.width) -8) &&
+                (mouseY < 8)
+            ) {
+                rightTop();
+
+            // right bottom box
+            } else if (
+                (mouseX > parseInt(canvasDiv.style.width) -8) &&
+                (mouseY > parseInt(canvasDiv.style.height) -8)
+            ) {
+                rightBottom();
+
+            // middle top box
+            } else if (
+                (parseInt(canvasDiv.style.width)/2 -4 < mouseX && mouseX < parseInt(canvasDiv.style.width)/2 +4) &&
+                (mouseY < 8)
+            ) {
+                middleTop();
+
+            // middle bottom box
+            } else if (
+                (parseInt(canvasDiv.style.width)/2 -4 < mouseX && mouseX < parseInt(canvasDiv.style.width)/2 +4) &&
+                (mouseY > parseInt(canvasDiv.style.height) -8)
+            ) {
+                middleBottom();
+
+            // else position
+            } else {
+                elsePosition();
+            }
+
+            // every position
+            everyPosition();
         }
-
-
-
-
-
 
 
 

@@ -64,14 +64,87 @@
         eventBox: function (x, y, s, text, textArray, color) {
 
             var eventBox = Object.create(mamsa.eventBox.prototype);
-            eventBox.create(x, y, s, text, textArray, color);
+            eventBox.create(x, y, s, text, textArray, color, {
+                mousemoveRightTop : function () {
+                    // alert('mousemoveRightTop');
+                },
+                clickRightTop : function () {
+                    // alert('clickRightTop');
+                },
+                clickRightRightTop : function () {
+                    // alert('clickRightRightTop');
+                },
+                mouseoutRightTop : function () {
+                    alert('mouseoutRightTop');
+                },
+
+                mousemoveRightBottom : function () {
+                    // alert('mousemoveRightBottom');
+                },
+                clickRightBottom : function () {
+                    // alert('clickRightBottom');
+                },
+                clickRightRightBottom : function () {
+                    // alert('clickRightRightBottom');
+                },
+                mouseoutRightBottom : function () {
+                    alert('mouseoutRightBottom');
+                },
+
+                mousemoveMiddleTop : function () {
+                    // alert('mousemoveMiddleTop');
+                },
+                clickMiddleTop : function () {
+                    // alert('clickMiddleTop');
+                },
+                clickRightMiddleTop : function () {
+                    // alert('clickRightMiddleTop');
+                },
+                mouseoutMiddleTop : function () {
+                    alert('mouseoutMiddleTop');
+                },
+
+                mousemoveMiddleBottom : function () {
+                    // alert('mousemoveMiddleBottom');
+                },
+                clickMiddleBottom : function () {
+                    // alert('clickMiddleBottom');
+                },
+                clickRightMiddleBottom : function () {
+                    // alert('clickRightMiddleBottom');
+                },
+                mouseoutMiddleBottom : function () {
+                    alert('mouseoutMiddleBottom');
+                },
+
+                mousemoveElsePosition : function () {
+                    // alert('mousemoveElsePosition');
+                },
+                clickElsePosition : function () {
+                    // alert('clickElsePosition');
+                },
+                clickRightElsePosition : function () {
+                    // alert('clickRightElsePosition');
+                },
+                mouseoutElsePosition : function () {
+                    alert('mouseoutElsePosition');
+                },
+
+                mousemoveEveryPosition : function () {
+                    // alert('mousemoveEveryPosition');
+                },
+                clickEveryPosition : function () {
+                    // alert('clickEveryPosition');
+                },
+                clickRightEveryPosition : function () {
+                    // alert('clickRightEveryPosition');
+                },
+                mouseoutEveryPosition : function () {
+                    alert('mouseoutEveryPosition');
+                }
 
 
-
-
-
-
-
+            });
 
 
         }

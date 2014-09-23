@@ -17,6 +17,21 @@
 
     eventBox.prototype = {
 
+        /**
+        * setType1 is eventBox with moveEvent, clickEvent, clickRightEvent, mouseOutEvent <br /><br />
+        * events callbacks are bellow <br />
+        * events.mousemoveLeftTop events.clickLeftTop events.clickRightLeftTop events.mouseoutLeftTop <br />
+        * events.mousemoveLeftBottom events.clickLeftBottom events.clickRightLeftBottom events.mouseoutLeftBottom <br />
+        * events.mousemoveRightTop events.clickRightTop events.clickRightRightTop events.mouseoutRightTop <br />
+        * events.mousemoveRightBottom events.clickRightBottom events.clickRightRightBottom events.mouseoutRightBottom <br />
+        * events.mousemoveMiddleTop events.clickMiddleTop events.clickRightMiddleTop events.mouseoutMiddleTop <br />
+        * events.mousemoveMiddleBottom events.clickMiddleBottom events.clickRightMiddleBottom events.mouseoutMiddleBottom <br />
+        * events.mousemoveElsePosition events.clickElsePosition events.clickRightElsePosition events.mouseoutElsePosition <br />
+        * events.mousemoveEveryPosition events.clickEveryPosition events.clickRightEveryPosition events.mouseoutEveryPosition 
+        *
+        * @method setType1
+        * @param {object} callback with events.<event name>
+        */
         setType1: function (events) {
 
             // set div box

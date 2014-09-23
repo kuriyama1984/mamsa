@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>selectSimple</title>
+    <script type="text/javascript" src="../../dist/namespace.js"></script>
+    <script type="text/javascript" src="./eventBox.js"></script>
+    <script>
+
+        window.onload = function () {
+
+            // set clever eventBox type1
+            var eventBox = Object.create(storage.eventBox.prototype);
+            eventBox.setType1({
+
+                mousemoveLeftTop : function (canvasElement) {
+                    // console.log('mousemoveLeftTop');
+                },
+                clickLeftTop : function (canvasElement) {
+                    console.log('clickLeftTop');
+                },
+                clickRightLeftTop : function (canvasElement) {
+                    console.log('clickRightLeftTop');
+                },
+                mouseoutLeftTop : function (canvasElement) {
+                    console.log('mouseoutLeftTop');
+                },
+
+                mousemoveLeftBottom : function (canvasElement) {
+                    // console.log('mousemoveLeftBottom');
+                },
+                clickLeftBottom : function (canvasElement) {
+                    console.log('clickLeftBottom');
+                },
+                clickRightLeftBottom : function (canvasElement) {
+                    console.log('clickRightLeftBottom');
+                },
+                mouseoutLeftBottom : function (canvasElement) {
+                    console.log('mouseoutLeftBottom');
+                },
+
+                mousemoveRightTop : function (canvasElement) {
+                    // console.log('mousemoveRightTop');
+                },
+                clickRightTop : function (canvasElement) {
+                    console.log('clickRightTop');
+                },
+                clickRightRightTop : function (canvasElement) {
+                    console.log('clickRightRightTop');
+                },
+                mouseoutRightTop : function (canvasElement) {
+                    console.log('mouseoutRightTop');
+                },
+
+                mousemoveRightBottom : function (canvasElement) {
+                    // console.log('mousemoveRightBottom');
+                },
+                clickRightBottom : function (canvasElement) {
+                    console.log('clickRightBottom');
+                },
+                clickRightRightBottom : function (canvasElement) {
+                    console.log('clickRightRightBottom');
+                },
+                mouseoutRightBottom : function (canvasElement) {
+                    console.log('mouseoutRightBottom');
+                },
+
+                mousemoveMiddleTop : function (canvasElement) {
+                    // console.log('mousemoveMiddleTop');
+                },
+                clickMiddleTop : function (canvasElement) {
+                    console.log('clickMiddleTop');
+                },
+                clickRightMiddleTop : function (canvasElement) {
+                    console.log('clickRightMiddleTop');
+                },
+                mouseoutMiddleTop : function (canvasElement) {
+                    console.log('mouseoutMiddleTop');
+                },
+
+                mousemoveMiddleBottom : function (canvasElement) {
+                    // console.log('mousemoveMiddleBottom');
+                },
+                clickMiddleBottom : function (canvasElement) {
+                    console.log('clickMiddleBottom');
+                },
+                clickRightMiddleBottom : function (canvasElement) {
+                    console.log('clickRightMiddleBottom');
+                },
+                mouseoutMiddleBottom : function (canvasElement) {
+                    console.log('mouseoutMiddleBottom');
+                },
+
+                mousemoveElsePosition : function (canvasElement) {
+                    // console.log('mousemoveElsePosition');
+                },
+                clickElsePosition : function (canvasElement) {
+                    console.log('clickElsePosition');
+                },
+                clickRightElsePosition : function (canvasElement) {
+                    console.log('clickRightElsePosition');
+                },
+                mouseoutElsePosition : function (canvasElement) {
+                    console.log('mouseoutElsePosition');
+                },
+
+                mousemoveEveryPosition : function (canvasElement) {
+                    console.log('mousemoveEveryPosition');
+                    showBox(canvasElement, '#FF0000');
+                },
+                clickEveryPosition : function (canvasElement) {
+                    console.log('clickEveryPosition');
+                },
+                clickRightEveryPosition : function (canvasElement) {
+                    console.log('clickRightEveryPosition');
+                },
+                mouseoutEveryPosition : function (canvasElement) {
+                    console.log('mouseoutEveryPosition');
+                    hideBox(canvasElement);
+                }
+            });
+        };
+
+        // show mouse field
+        var showBox = function (canvasElement, color) {
+
+            context = canvasElement.getContext("2d");
+
+            // drow square
+            context.strokeStyle = color;
+            context.lineWidth = 2;
+            context.strokeRect(0, 0, canvasElement.width, canvasElement.height);
+
+            // drow square
+            context.fillStyle = color;
+            context.fillRect(0, 0, 8, 8);
+
+            // drow square
+            context.fillStyle = color;
+            context.fillRect(0, canvasElement.height -8, 8, 8);
+
+            // drow square
+            context.fillStyle = color;
+            context.fillRect(canvasElement.width/2 -3, 0, 6, 6);
+
+            // drow square
+            context.fillStyle = color;
+            context.fillRect(canvasElement.width/2 -3, canvasElement.height -6, 6, 6);
+
+            // drow square
+            context.fillStyle = color;
+            context.fillRect(canvasElement.width -8, 0, 8, 8);
+
+            // drow square
+            context.fillStyle = color;
+            context.fillRect(canvasElement.width -8, canvasElement.height -8, 8, 8);
+        };
+
+        // hide mouse field
+        var hideBox = function (canvasElement) {
+
+            context = canvasElement.getContext("2d");
+
+            // drow square
+            context.fillStyle = 'blue';
+            context.fillRect(0, 0, canvasElement.width, canvasElement.height);
+        };
+
+    </script>
+</head>
+<body>
+    <h1>eventBox with canvas (check console.log)</h1>
+    <div id="disp"></div>
+
+</body>
+</html>

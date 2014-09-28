@@ -11,7 +11,7 @@
 
             // set clever eventBox type1
             var eventBox = Object.create(storage.eventBox.prototype);
-            eventBox.setType1({
+            eventBox.setType1("disp", 50, 100, 200, 50, {
 
                 mousemoveLeftTop : function (canvasElement) {
                     // console.log('mousemoveLeftTop');
@@ -136,23 +136,18 @@
             context.fillRect(0, 0, 8, 8);
 
             // drow square
-            context.fillStyle = color;
             context.fillRect(0, canvasElement.height -8, 8, 8);
 
             // drow square
-            context.fillStyle = color;
             context.fillRect(canvasElement.width/2 -3, 0, 6, 6);
 
             // drow square
-            context.fillStyle = color;
             context.fillRect(canvasElement.width/2 -3, canvasElement.height -6, 6, 6);
 
             // drow square
-            context.fillStyle = color;
             context.fillRect(canvasElement.width -8, 0, 8, 8);
 
             // drow square
-            context.fillStyle = color;
             context.fillRect(canvasElement.width -8, canvasElement.height -8, 8, 8);
         };
 

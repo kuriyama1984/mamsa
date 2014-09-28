@@ -43,10 +43,17 @@ window.addEventListener("load", function() {
 
     var text = '問題発言のオンパレード';
     var textArray = 'はじめまして こんにちは ありがとうございました！！！！！<br /><a href="https://www.google.co.jp/" target=”_blank”>たすけてーーーーー</a>';
-    maps.eventBox(300, 50, 1, text, textArray, '#FF00FF');
+    // maps.eventBox2(300, 50, 1, text, textArray, '#FF00FF');
 
-    // maps.shikaku(canvas, 400, 180, 1, 'test', '#00ffff', 300);
+    // eventbox
+    maps.eventBox('0001', 100, 50, '調査内容 ccc', 'mod');
+    maps.eventBox('0002', 300, 50, 'おはよう cccxxx', 'view');
 
 
+    // eventbox2
+    maps.eventBox2('1001', 100, 150, '調査内容2 ccc', 'ああああああ　いいいい　ううううう　ええええええ　おおお', 'mod');
+    // maps.eventBox2('1002', 300, 150, 'おはよう2 cccxxx', 'ああああああ　いいいい　ううううう　ええええええ　おおお', 'view');
 }, true);
+
+
 

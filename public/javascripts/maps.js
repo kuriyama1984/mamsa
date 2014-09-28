@@ -61,7 +61,7 @@
             return widthMax;
         },
 
-        eventBox: function (x, y, s, text, textArray, color) {
+        eventBox2: function (x, y, s, text, textArray, color) {
 
             var eventBox = Object.create(mamsa.eventBox.prototype);
             eventBox.create(x, y, s, text, textArray, color, {
@@ -142,18 +142,233 @@
                 mouseoutEveryPosition : function () {
                     alert('mouseoutEveryPosition');
                 }
-
-
             });
+        },
+
+        eventBox: function (id, x, y, text, type) {
+
+            // set clever eventBox type1
+            var eventBox = Object.create(mamsa.eventBox.prototype);
+            eventBox.setType2('mapBody', id, x, y, text, type, {
+
+                mousemoveLeftTop : function (canvasElement, x, y) {
+                    console.log('mousemoveLeftTop');
+                },
+                clickLeftTop : function (canvasElement, x, y) {
+                    console.log('clickLeftTop');
+                },
+                clickRightLeftTop : function (canvasElement, x, y) {
+                    console.log('clickRightLeftTop');
+                },
+                mouseoutLeftTop : function (canvasElement, x, y) {
+                    console.log('mouseoutLeftTop');
+                },
+
+                mousemoveLeftBottom : function (canvasElement, x, y) {
+                    console.log('mousemoveLeftBottom');
+                },
+                clickLeftBottom : function (canvasElement, x, y) {
+                    console.log('clickLeftBottom');
+                },
+                clickRightLeftBottom : function (canvasElement, x, y) {
+                    console.log('clickRightLeftBottom');
+                },
+                mouseoutLeftBottom : function (canvasElement, x, y) {
+                    console.log('mouseoutLeftBottom');
+                },
+
+                mousemoveRightTop : function (canvasElement, x, y) {
+                    console.log('mousemoveRightTop');
+                },
+                clickRightTop : function (canvasElement, x, y) {
+                    console.log('clickRightTop');
+                },
+                clickRightRightTop : function (canvasElement, x, y) {
+                    console.log('clickRightRightTop');
+                },
+                mouseoutRightTop : function (canvasElement, x, y) {
+                    console.log('mouseoutRightTop');
+                },
+
+                mousemoveRightBottom : function (canvasElement, x, y) {
+                    console.log('mousemoveRightBottom');
+                },
+                clickRightBottom : function (canvasElement, x, y) {
+                    console.log('clickRightBottom');
+                },
+                clickRightRightBottom : function (canvasElement, x, y) {
+                    console.log('clickRightRightBottom');
+                },
+                mouseoutRightBottom : function (canvasElement, x, y) {
+                    console.log('mouseoutRightBottom');
+                },
+
+                mousemoveMiddleTop : function (canvasElement, x, y) {
+                    console.log('mousemoveMiddleTop');
+                },
+                clickMiddleTop : function (canvasElement, x, y) {
+                    console.log('clickMiddleTop');
+                },
+                clickRightMiddleTop : function (canvasElement, x, y) {
+                    console.log('clickRightMiddleTop');
+                },
+                mouseoutMiddleTop : function (canvasElement, x, y) {
+                    console.log('mouseoutMiddleTop');
+                },
+
+                mousemoveMiddleBottom : function (canvasElement, x, y) {
+                    console.log('mousemoveMiddleBottom');
+                },
+                clickMiddleBottom : function (canvasElement, x, y) {
+                    console.log('clickMiddleBottom');
+                },
+                clickRightMiddleBottom : function (canvasElement, x, y) {
+                    console.log('clickRightMiddleBottom');
+                },
+                mouseoutMiddleBottom : function (canvasElement, x, y) {
+                    console.log('mouseoutMiddleBottom');
+                },
+
+                mousemoveElsePosition : function (canvasElement, x, y) {
+                    // console.log('mousemoveElsePosition');
+                },
+                clickElsePosition : function (canvasElement, x, y) {
+                    // console.log('clickElsePosition');
+                },
+                clickRightElsePosition : function (canvasElement, x, y) {
+                    // console.log('clickRightElsePosition');
+                },
+                mouseoutElsePosition : function (canvasElement, x, y) {
+                    // console.log('mouseoutElsePosition');
+                },
+
+                mousemoveEveryPosition : function (canvasElement, x, y) {
+                    // console.log('mousemoveEveryPosition');
+                },
+                clickEveryPosition : function (canvasElement, x, y) {
+                    // console.log('clickEveryPosition');
+                },
+                clickRightEveryPosition : function (canvasElement, x, y) {
+                    // console.log('clickRightEveryPosition');
+                },
+                mouseoutEveryPosition : function (canvasElement, x, y) {
+                    // console.log('mouseoutEveryPosition');
+                }
+            });
+        },
 
 
+        eventBox2: function (id, x, y, text, textPop, type) {
+
+            // set clever eventBox type1
+            var eventBox = Object.create(mamsa.eventBox.prototype);
+            eventBox.setType3('mapBody', id, x, y, text, textPop, type, {
+
+                mousemoveLeftTop : function (canvasElement, x, y) {
+                    console.log('mousemoveLeftTop');
+                },
+                clickLeftTop : function (canvasElement, x, y) {
+                    console.log('clickLeftTop');
+                },
+                clickRightLeftTop : function (canvasElement, x, y) {
+                    console.log('clickRightLeftTop');
+                },
+                mouseoutLeftTop : function (canvasElement, x, y) {
+                    console.log('mouseoutLeftTop');
+                },
+
+                mousemoveLeftBottom : function (canvasElement, x, y) {
+                    console.log('mousemoveLeftBottom');
+                },
+                clickLeftBottom : function (canvasElement, x, y) {
+                    console.log('clickLeftBottom');
+                },
+                clickRightLeftBottom : function (canvasElement, x, y) {
+                    console.log('clickRightLeftBottom');
+                },
+                mouseoutLeftBottom : function (canvasElement, x, y) {
+                    console.log('mouseoutLeftBottom');
+                },
+
+                mousemoveRightTop : function (canvasElement, x, y) {
+                    console.log('mousemoveRightTop');
+                },
+                clickRightTop : function (canvasElement, x, y) {
+                    console.log('clickRightTop');
+                },
+                clickRightRightTop : function (canvasElement, x, y) {
+                    console.log('clickRightRightTop');
+                },
+                mouseoutRightTop : function (canvasElement, x, y) {
+                    console.log('mouseoutRightTop');
+                },
+
+                mousemoveRightBottom : function (canvasElement, x, y) {
+                    console.log('mousemoveRightBottom');
+                },
+                clickRightBottom : function (canvasElement, x, y) {
+                    console.log('clickRightBottom');
+                },
+                clickRightRightBottom : function (canvasElement, x, y) {
+                    console.log('clickRightRightBottom');
+                },
+                mouseoutRightBottom : function (canvasElement, x, y) {
+                    console.log('mouseoutRightBottom');
+                },
+
+                mousemoveMiddleTop : function (canvasElement, x, y) {
+                    console.log('mousemoveMiddleTop');
+                },
+                clickMiddleTop : function (canvasElement, x, y) {
+                    console.log('clickMiddleTop');
+                },
+                clickRightMiddleTop : function (canvasElement, x, y) {
+                    console.log('clickRightMiddleTop');
+                },
+                mouseoutMiddleTop : function (canvasElement, x, y) {
+                    console.log('mouseoutMiddleTop');
+                },
+
+                mousemoveMiddleBottom : function (canvasElement, x, y) {
+                    console.log('mousemoveMiddleBottom');
+                },
+                clickMiddleBottom : function (canvasElement, x, y) {
+                    console.log('clickMiddleBottom');
+                },
+                clickRightMiddleBottom : function (canvasElement, x, y) {
+                    console.log('clickRightMiddleBottom');
+                },
+                mouseoutMiddleBottom : function (canvasElement, x, y) {
+                    console.log('mouseoutMiddleBottom');
+                },
+
+                mousemoveElsePosition : function (canvasElement, x, y) {
+                    // console.log('mousemoveElsePosition');
+                },
+                clickElsePosition : function (canvasElement, x, y) {
+                    // console.log('clickElsePosition');
+                },
+                clickRightElsePosition : function (canvasElement, x, y) {
+                    // console.log('clickRightElsePosition');
+                },
+                mouseoutElsePosition : function (canvasElement, x, y) {
+                    // console.log('mouseoutElsePosition');
+                },
+
+                mousemoveEveryPosition : function (canvasElement, x, y) {
+                    // console.log('mousemoveEveryPosition');
+                },
+                clickEveryPosition : function (canvasElement, x, y) {
+                    // console.log('clickEveryPosition');
+                },
+                clickRightEveryPosition : function (canvasElement, x, y) {
+                    // console.log('clickRightEveryPosition');
+                },
+                mouseoutEveryPosition : function (canvasElement, x, y) {
+                    // console.log('mouseoutEveryPosition');
+                }
+            });
         }
-
-
-
-
-
-
 
 
 

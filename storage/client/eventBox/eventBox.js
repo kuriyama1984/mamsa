@@ -32,22 +32,25 @@
         * @method setType1
         * @param {object} callback with events.<event name>
         */
-        setType1: function (events) {
+        setType1: function (disp, left, top, width, height, events) {
 
             // set div box
             canvasDiv = document.createElement('div');
-            canvasDiv.id = "canvasDiv";
-            canvasDiv.style.width = '300px';
-            canvasDiv.style.height = '100px';
+            canvasDiv.id = 'canvasDiv';
+            canvasDiv.style.position = 'absolute';
+            canvasDiv.style.top = top + 'px';
+            canvasDiv.style.left = left + 'px';
+            canvasDiv.style.width = width + 'px';
+            canvasDiv.style.height = height + 'px';
             canvasDiv.style.backgroundColor = 'blue';
 
             canvasElement = document.createElement('canvas');
-            canvasElement.id = "canvasElement";
-            canvasElement.style.width = '300px';
-            canvasElement.style.height = '100px';
+            canvasElement.id = 'canvasElement';
+            canvasElement.style.width = width + 'px';
+            canvasElement.style.height = height + 'px';
 
-            document.getElementById("disp").appendChild(canvasDiv);
-            document.getElementById("canvasDiv").appendChild(canvasElement);
+            document.getElementById(disp).appendChild(canvasDiv);
+            document.getElementById('canvasDiv').appendChild(canvasElement);
 
             // this
             var me = this;
@@ -166,10 +169,10 @@
 
                 switch (this.mouseField) {
                     case 1:
-                        events.mouseoutRightTop(canvasElement);
+                        events.mouseoutLeftTop(canvasElement);
                         break;
                     case 2:
-                        events.mouseoutRightTop(canvasElement);
+                        events.mouseoutLeftBottom(canvasElement);
                         break;
                     case 3:
                         events.mouseoutRightTop(canvasElement);

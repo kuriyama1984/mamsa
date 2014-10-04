@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>selectSimple</title>
+    <script type="text/javascript" src="../../lib/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../../dist/namespace.js"></script>
+    <script type="text/javascript" src="./webStrage.js"></script>
+    <script>
+        var webStrage = Object.create(storage.webStrage.prototype);
+
+        window.onload = function () {
+            webStrage.create();
+        };
+
+        var clickSetLocal = function () {
+            var key = document.getElementById("setLocalKey").value;
+            var value = document.getElementById("setLocalVal").value;
+            webStrage.setLocal(key, value);
+        };
+
+        var clickGetLocal = function () {
+            var key = document.getElementById("getLocalKey").value;
+            document.getElementById("getLocalVal").innerHTML = webStrage.getLocal(key);
+        };
+
+        var clickDelLocal = function () {
+            var key = document.getElementById("setLocalKey").value;
+            webStrage.deleteLocal(key);
+        };
+
+        var clickDelLocalAll = function () {
+            var key = document.getElementById("setLocalKey").value;
+            webStrage.deleteLocalAll(key);
+        };
+
+        var clickSetSession = function () {
+            var key = document.getElementById("setSessionKey").value;
+            var value = document.getElementById("setSessionVal").value;
+            webStrage.setSession(key, value);
+        };
+
+        var clickGetSession = function () {
+            var key = document.getElementById("getSessionKey").value;
+            document.getElementById("getSessionVal").innerHTML = webStrage.getSession(key);
+        };
+
+        var clickDelSession = function () {
+            var key = document.getElementById("setSessionKey").value;
+            webStrage.deleteSession(key);
+        };
+
+        var clickDelSessionAll = function () {
+            var key = document.getElementById("setSessionKey").value;
+            webStrage.deleteSessionAll(key);
+        };
+
+    </script>
+</head>
+<body>
+    <h1>simple webStrage</h1>
+
+    <table>
+        <tr><td colspan='2'>Local</td></tr>
+        <tr><td>Seting Key and Value</td><td>Getting Value form Key</td></tr>
+        <tr>
+            <td>
+                <input type="text" id="setLocalKey" value="fruit.apple.price">
+                <input type="text" id="setLocalVal" value="100">
+                <button onclick="clickSetLocal();">SET</button>
+                <button onclick="clickDelLocal();">DEL</button>
+            </td>
+            <td>
+                <input type="text" id="getLocalKey" value="fruit.apple.price">
+                <span id="getLocalVal"></span>
+                <button onclick="clickGetLocal()">GET</button>
+                <button onclick="clickDelLocalAll();">DELALL</button>
+            </td>
+        </tr>
+        <tr><td colspan='2' style="padding-top:40px;">Session</td></tr>
+        <tr><td>Seting Key and Value</td><td>Getting Value form Key</td></tr>
+        <tr>
+            <td>
+                <input type="text" id="setSessionKey" value="fruit.apple.price">
+                <input type="text" id="setSessionVal" value="100">
+                <button onclick="clickSetSession();">SET</button>
+                <button onclick="clickDelSession();">DEL</button>
+            </td>
+            <td>
+                <input type="text" id="getSessionKey" value="fruit.apple.price">
+                <span id="getSessionVal"></span>
+                <button onclick="clickGetSession()">GET</button>
+                <button onclick="clickDelSessionAll();">DELALL</button>
+            </td>
+        </tr>
+    </table>
+
+
+</body>
+</html>

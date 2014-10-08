@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>selectSimple</title>
+    <link rel='stylesheet' href='./gijiroku.css' />
+    <script type="text/javascript" src="../../dist/namespace.js"></script>
+    <script type="text/javascript" src="./gijiroku.js"></script>
+    <script>
+        var gijiroku = Object.create(storage.gijiroku.prototype);
+
+        window.onload = function () {
+            gijiroku.create('disp', 800);
+
+            gijiroku.setTextarea('記入例：あああああああああ');
+
+            gijiroku.setFormalDocument('議事録の内容いいいいい<br />いいいいいいいいいいいいいいいいいいいい<br />いいいいいい');
+
+            gijiroku.setFormalDocument('議事録の内容ううううううううううううううう<br />うううう<br />うううううううううううう');
+
+            gijiroku.setTextarea('記入例：ええええええええええええええええええええええ');
+
+            gijiroku.setTextarea('記入例：おおおおお');
+
+            gijiroku.setFormalDocument('議事録の内容かかかかかかかか');
+        };
+
+    </script>
+</head>
+<body>
+    <h1>make gijiroku</h1>
+
+    <div id="disp"></div>
+
+</body>
+</html>

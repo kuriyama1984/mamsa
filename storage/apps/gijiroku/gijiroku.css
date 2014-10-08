@@ -1,0 +1,44 @@
+body {
+    padding: 20px;
+    font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+#gijiroku_up {
+    padding: 14px;
+    -moz-border-radius: 23px;
+    -webkit-border-radius: 23px;
+    border-radius: 23px;
+    /*IE 7 AND 8 DO NOT SUPPORT BORDER RADIUS*/
+    -moz-box-shadow: 0px 0px 7px #000000;
+    -webkit-box-shadow: 0px 0px 7px #000000;
+    box-shadow: 0px 0px 7px #000000;
+    /*IE 7 AND 8 DO NOT SUPPORT BLUR PROPERTY OF SHADOWS*/
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#ffffff', endColorstr = '#a39ca6');
+    /*INNER ELEMENTS MUST NOT BREAK THIS ELEMENTS BOUNDARIES*/
+    /*Element must have a height (not auto)*/
+    /*All filters must be placed together*/
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr = '#ffffff', endColorstr = '#a39ca6')";
+    /*Element must have a height (not auto)*/
+    /*All filters must be placed together*/
+    background-image: -moz-linear-gradient(top, #ffffff, #a39ca6);
+    background-image: -ms-linear-gradient(top, #ffffff, #a39ca6);
+    background-image: -o-linear-gradient(top, #ffffff, #a39ca6);
+    background-image: -webkit-gradient(linear, center top, center bottom, from(#ffffff), to(#a39ca6));
+    background-image: -webkit-linear-gradient(top, #ffffff, #a39ca6);
+    background-image: linear-gradient(top, #ffffff, #a39ca6);
+    -moz-background-clip: padding;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    /*Use "background-clip: padding-box" when using rounded corners to avoid the gradient bleeding through the corners*/
+    /*--IE9 WILL PLACE THE FILTER ON TOP OF THE ROUNDED CORNERS--*/
+    opacity: 0.56;
+    -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity = 56);
+    /*-ms-filter must come before filter*/
+    filter: alpha(opacity = 56);
+    /*INNER ELEMENTS MUST NOT BREAK THIS ELEMENTS BOUNDARIES*/
+    /*All filters must be placed together*/
+}
+
+#gijiroku_down {
+    padding: 14px;
+}

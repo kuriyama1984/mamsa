@@ -19,3 +19,14 @@ a {
 }
 
 
+.eventBox::selection {
+    background: rgba(255, 255, 255, 0);
+    color: rgba(255, 255, 255, 0);
+}
+ 
+/*Firefoxに対応*/
+.eventBox::-moz-selection {
+    background: rgba(255, 255, 255, 0);
+    color: rgba(255, 255, 255, 0);
+}
+

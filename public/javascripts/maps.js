@@ -25,6 +25,10 @@
     var globalRatio = 1;
     var eventBoxs = [];
     var databases = [];
+    var lineColor = {
+        base: '#0000ff',
+        over: '#ffa500'
+    };
 
     var isLine = false; // drow line flag
     // var isMiddleTop = false; // mouse is on middle top
@@ -34,7 +38,6 @@
     //  load util and unit classes
     // -----------------------------------
     var background = Object.create(mamsa.background.prototype);
-
 
     // for avoiding reference
     var clone = function (obj) {
@@ -65,8 +68,8 @@
 
             mousemove : function (x, y) {
                 reset();
-                showLines();
-                drowLine(null, null, x, y, isLine, '#ffa500');
+                showLine();
+                drowLine(null, null, x, y, isLine, lineColor.over);
             },
             mousedown : function (x, y) {
 
@@ -117,26 +120,62 @@
 
         show: function (_databases, callbacks) {
             databases = _databases;
-            for (var i = 0; i < databases.length; i++) {
-                // set eventBox
-                if (databases[i].type === 'eventbox') {
-                    setEventBox(databases[i].id, databases[i].x, databases[i].y, databases[i].title, databases[i].text, 'mod', {
-                        saveLine: function (startId, endId) {
-                            var newDatabase = {id: '0008', type: 'line', x: 0, y: 0, title: '', text: '', from: startId, to: endId};
-                            callbacks.saveLine(newDatabase);
-                            databases.push(newDatabase);
-                        }
-                    });
-                }
-            }
-            showLines();
+            showEventBox(callbacks);
+            showLineArrow();
         }
     };
 
-    var showLines = function () {
+    var showEventBox = function (callbacks) {
         for (var i = 0; i < databases.length; i++) {
             // set eventBox
-            if (databases[i].type === 'line') {
+            if (databases[i].type === 'eventbox') {
+                var db = databases[i];
+                setEventBox(db.id, db.x, db.y, db.title, db.text, 'mod', {
+                    saveLine: function (startId, endId) {
+                        var newDb = {
+                            id: '0008',
+                            type: 'line',
+                            x: 0,
+                            y: 0,
+                            title: '',
+                            text: '',
+                            from: startId,
+                            to: endId
+                        };
+                        callbacks.saveLine(newDb);
+                        databases.push(newDb);
+                    }
+                });
+            }
+        }
+    };
+
+    var showLineArrow = function () {
+        showLine(function (database, fromXBC, fromYBC, toXTC, toYTC) {
+            setArrow(database, fromXBC, fromYBC, toXTC, toYTC);
+        });
+    };
+
+    var showLine = function (setArrow, targets, callback) {
+        reset();
+        for (var i = 0; i < databases.length; i++) {
+            // check target id
+            var targetsFlag = false;
+            if (typeof(targets) !== 'undefined') {
+                for (var j = 0; j < targets.length; j++) {
+                    if (databases[i].id === targets[j]) {
+                        targetsFlag = true;
+                    }
+                }
+            }
+            // change color
+            var color = lineColor.base;
+            if (targetsFlag) {
+                color = '#ffa500';
+            }
+
+            // draw line
+            if (databases[i].type === 'line' || databases[i].type === 'arrow') {
                 var fromXBC = 0;
                 var fromYBC = 0;
                 var fromXCR = 0;
@@ -146,33 +185,88 @@
                 var toXCR = 0;
                 var toYCR = 0;
                 // select each positions
-                for (var j = 0; j < eventBoxs.length; j++) {
-                    if (eventBoxs[j].id === databases[i].from) {
-                        fromXBC = eventBoxs[j].each.posBC.x;
-                        fromYBC = eventBoxs[j].each.posBC.y;
-                        fromXCR = eventBoxs[j].each.posCR.x;
-                        fromYCR = eventBoxs[j].each.posCR.y;
-                    } else if (eventBoxs[j].id === databases[i].to) {
-                        toXTC = eventBoxs[j].each.posTC.x;
-                        toYTC = eventBoxs[j].each.posTC.y;
-                        toXCR = eventBoxs[j].each.posCR.x;
-                        toYCR = eventBoxs[j].each.posCR.y;
+                for (var k = 0; k < eventBoxs.length; k++) {
+                    if (eventBoxs[k].id === databases[i].from) {
+                        fromXBC = eventBoxs[k].each.posBC.x;
+                        fromYBC = eventBoxs[k].each.posBC.y;
+                        fromXCR = eventBoxs[k].each.posCR.x;
+                        fromYCR = eventBoxs[k].each.posCR.y;
+                        // callback from.id and eventbox
+                        if (targetsFlag && typeof(callback) === 'function') {
+                            callback(databases[i].from, eventBoxs[k]);
+                        }
+                    } else if (eventBoxs[k].id === databases[i].to) {
+                        toXTC = eventBoxs[k].each.posTC.x;
+                        toYTC = eventBoxs[k].each.posTC.y;
+                        toXCR = eventBoxs[k].each.posCR.x;
+                        toYCR = eventBoxs[k].each.posCR.y;
+                        // callback to.id and eventbox
+                        if (targetsFlag && typeof(callback) === 'function') {
+                            callback(databases[i].to, eventBoxs[k]);
+                        }
                     }
                 }
                 // single line
                 if (fromYBC < toYTC) {
-                    drowLine(fromXBC, fromYBC, toXTC, toYTC, true, '#0000ff');
+                    drowLine(fromXBC, fromYBC, toXTC, toYTC, true, color);
+                    if (databases[i].type === 'arrow' && typeof(setArrow) === 'function') {
+                        setArrow(databases[i], fromXBC, fromYBC, toXTC, toYTC);
+                    }
                 } else {
                     var posRight = fromXCR + (fromYBC - fromYCR);
                     if (fromXCR < toXCR) {
                         posRight = toXCR + (fromYBC - fromYCR);
                     }
-                    drowLine(fromXCR, fromYCR, posRight, fromYCR, true, '#0000ff');
-                    drowLine(posRight, fromYCR, posRight, toYCR, true, '#0000ff');
-                    drowLine(toXCR, toYCR, posRight, toYCR, true, '#0000ff');
+                    drowLine(fromXCR, fromYCR, posRight, fromYCR, true, color);
+                    drowLine(posRight, fromYCR, posRight, toYCR, true, color);
+                    drowLine(toXCR, toYCR, posRight, toYCR, true, color);
+                    if (databases[i].type === 'arrow' && typeof(setArrow) === 'function') {
+                        setArrow(databases[i], posRight, fromYCR, posRight, toYCR);
+                    }
                 }
             }
         }
+    };
+
+    var searchDatabase = function (id) {
+        for (var i = 0; i < databases.length; i++) {
+            if (databases[i].id === id) {
+                return databases[i];
+            }
+        }
+    };
+
+    var setArrow = function (database, x1, y1, x2, y2) {
+        var eventArrow = Object.create(mamsa.eventArrow.prototype);
+
+        // set event
+        eventArrow.set('mapBody', database.id, x1, y1, x2, y2, 'mod', {
+            mouseenter : function (canvasElement, x, y) {
+                console.log('mousemove ------' + canvasElement +'_'+ x +'_'+ y);
+
+
+                // lineColor.base = '#ffa500';
+                showLine(null, [database.id], function (id, eventBox) {
+                    console.log(id);
+                    console.log(eventBox);
+                    eventBox.changeColor(true, '#ffa500');
+                });
+            },
+            mouseout : function (canvasElement, x, y) {
+                console.log('mousemove ------' + canvasElement +'_'+ x +'_'+ y);
+
+
+                // lineColor.base = '#ffa500';
+                showLine(null, [database.id], function (id, eventBox) {
+                    console.log(id);
+                    console.log(eventBox);
+                    eventBox.changeColor(false, '#0000ff');
+                });
+            }
+        });
+
+        // console.log(eventArrow.each);
+
     };
 
     var setEventBox = function (id, x1, y1, text, textPop, type, callbacks) {
@@ -180,13 +274,13 @@
 
         // set clever eventBox type1
         var eventBox = Object.create(mamsa.eventBox.prototype);
-        eventBox.setType1('mapBody', id, x1, y1, text, textPop, type, {
+        eventBox.set('mapBody', id, x1, y1, text, textPop, type, {
 
             mousemoveLeftTop : function (canvasElement, x2, y2) {
                 console.log('mousemoveLeftTop');
             },
-            clickLeftTop : function (canvasElement, x2, y2) {
-                console.log('clickLeftTop');
+            mousedownLeftTop : function (canvasElement, x2, y2) {
+                console.log('mousedownLeftTop');
             },
             clickRightLeftTop : function (canvasElement, x2, y2) {
                 console.log('clickRightLeftTop');
@@ -201,8 +295,8 @@
             mousemoveLeftBottom : function (canvasElement, x2, y2) {
                 console.log('mousemoveLeftBottom');
             },
-            clickLeftBottom : function (canvasElement, x2, y2) {
-                console.log('clickLeftBottom');
+            mousedownLeftBottom : function (canvasElement, x2, y2) {
+                console.log('mousedownLeftBottom');
             },
             clickRightLeftBottom : function (canvasElement, x2, y2) {
                 console.log('clickRightLeftBottom');
@@ -217,8 +311,8 @@
             mousemoveRightTop : function (canvasElement, x2, y2) {
                 console.log('mousemoveRightTop');
             },
-            clickRightTop : function (canvasElement, x2, y2) {
-                console.log('clickRightTop');
+            mousedownRightTop : function (canvasElement, x2, y2) {
+                console.log('mousedownRightTop');
             },
             clickRightRightTop : function (canvasElement, x2, y2) {
                 console.log('clickRightRightTop');
@@ -232,9 +326,13 @@
 
             mousemoveRightBottom : function (canvasElement, x2, y2) {
                 console.log('mousemoveRightBottom');
+                var box = document.getElementById("box" + id);
+                var boxW = parseInt(box.style.width, 10);
+                var boxH = parseInt(box.style.height, 10);
+                console.log(boxW +'_'+ boxH);
             },
-            clickRightBottom : function (canvasElement, x2, y2) {
-                console.log('clickRightBottom');
+            mousedownRightBottom : function (canvasElement, x2, y2) {
+                console.log('mousedownRightBottom');
             },
             clickRightRightBottom : function (canvasElement, x2, y2) {
                 console.log('clickRightRightBottom');
@@ -250,8 +348,8 @@
                 console.log('mousemoveMiddleTop');
                 // isMiddleTop = true; // mouse is on middle Top
             },
-            clickMiddleTop : function (canvasElement, x2, y2) {
-                console.log('clickMiddleTop');
+            mousedownMiddleTop : function (canvasElement, x2, y2) {
+                console.log('mousedownMiddleTop');
             },
             clickRightMiddleTop : function (canvasElement, x2, y2) {
                 console.log('clickRightMiddleTop');
@@ -268,8 +366,8 @@
                 console.log('mousemoveMiddleBottom');
                 // eventBox.common.overColor = '#0000ff';
             },
-            clickMiddleBottom : function (canvasElement, x2, y2) {
-                console.log('clickMiddleBottom');
+            mousedownMiddleBottom : function (canvasElement, x2, y2) {
+                console.log('mousedownMiddleBottom');
 
                 startX = x1 + x2; // mousedown x
                 startY = y1 + y2 + 2; // mousedown y
@@ -292,8 +390,8 @@
             mousemoveElsePosition : function (canvasElement, x2, y2) {
                 // console.log('mousemoveElsePosition');
             },
-            clickElsePosition : function (canvasElement, x2, y2) {
-                // console.log('clickElsePosition');
+            mousedownElsePosition : function (canvasElement, x2, y2) {
+                // console.log('mousedownElsePosition');
             },
             clickRightElsePosition : function (canvasElement, x2, y2) {
                 // console.log('clickRightElsePosition');
@@ -309,8 +407,8 @@
                 // console.log('mousemoveEveryPosition');
                 // eventBox.changeColor(true, '#FFA500');
             },
-            clickEveryPosition : function (canvasElement, x2, y2) {
-                // console.log('clickEveryPosition');
+            mousedownEveryPosition : function (canvasElement, x2, y2) {
+                // console.log('mousedownEveryPosition');
             },
             clickRightEveryPosition : function (canvasElement, x2, y2) {
                 // console.log('clickRightEveryPosition');
@@ -328,7 +426,7 @@
                 isLine = false; // finish drow line
                 // reset map
                 reset();
-                showLines();
+                showLine();
             },
             mouseoutEveryPosition : function (canvasElement, x2, y2) {
                 // console.log('mouseoutEveryPosition');
@@ -336,13 +434,9 @@
             }
         });
         eventBoxs.push(eventBox);
+
+
     };
-
-
-
-
-
-
 
     ns.prototype = maps.prototype;
 

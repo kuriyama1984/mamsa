@@ -78,16 +78,17 @@
         changeColor: function (flag, color) {
             this.fixColor.flag = flag;
             this.fixColor.color = color;
-            this._setFrame(this.ele, null, this.modType, color);
+            setFrame(this.ele, null, this.modType, color);
             setText(this.boxText, this.ele);
         },
 
         resetColor: function () {
-            this._setFrame(ele, null, modType, '#0000ff');
+            setFrame(ele, null, modType, '#0000ff');
             setText(boxText, ele);
         },
 
         _popUpFlags: {},
+
 
 
 
@@ -112,7 +113,7 @@
         * @param {number} height
         * @param {object} callback with events.<event name>
         */
-        setType1: function (disp, id, left, top, text, textPop, type, events) {
+        set: function (disp, id, left, top, text, textPop, type, events) {
 
             this.fixColor = clone(this.fixColor); // for avoiding reference
 
@@ -120,42 +121,45 @@
             var modType = type;
             var boxText = text;
 
-            var ele = this._setCanvas(disp, id, left, top, boxText, events, {
+            var ele = setCanvas(disp, id, left, top, boxText, events, {
 
                 mousemoveLeftTop : function (x, y) {
-                    me._setFrame(ele, 3, modType, (me.fixColor.flag ? me.fixColor.color : me.common.overColor));
+                    setFrame(ele, 3, modType, (me.fixColor.flag ? me.fixColor.color : me.common.overColor));
                     setText(boxText, ele);
                 },
                 mousemoveLeftBottom : function (x, y) {
-                    me._setFrame(ele, 3, modType, (me.fixColor.flag ? me.fixColor.color : me.common.overColor));
+                    setFrame(ele, 3, modType, (me.fixColor.flag ? me.fixColor.color : me.common.overColor));
                     setText(boxText, ele);
                 },
                 mousemoveMiddleTop : function (x, y) {
                     // usual
-                    me._setFrame(ele, 3, modType, (me.fixColor.flag ? me.fixColor.color : me.common.overColor));
+                    setFrame(ele, 3, modType, (me.fixColor.flag ? me.fixColor.color : me.common.overColor));
                     setText(boxText, ele);
                 },
                 mousemoveMiddleBottom : function (x, y) {
-                    me._setFrame(ele, 'middleBottom', modType, (me.fixColor.flag ? me.fixColor.color : '#ffa500'));
+                    setFrame(ele, 'middleBottom', modType, (me.fixColor.flag ? me.fixColor.color : '#ffa500'));
                     setText(boxText, ele);
                     changeCursor('pointer');
                 },
                 mousemoveRightTop : function (x, y) {
-                    me._setFrame(ele, 'rightTop', modType, (me.fixColor.flag ? me.fixColor.color : '#ffa500'));
+                    setFrame(ele, 'rightTop', modType, (me.fixColor.flag ? me.fixColor.color : '#ffa500'));
                     setText(boxText, ele);
                     changeCursor('pointer');
                 },
                 mousemoveRightBottom : function (x, y) {
-                    me._setFrame(ele, 'rightBottom', modType, (me.fixColor.flag ? me.fixColor.color : '#ffa500'));
+                    setFrame(ele, 'rightBottom', modType, (me.fixColor.flag ? me.fixColor.color : '#ffa500'));
                     setText(boxText, ele);
                     changeCursor('pointer');
                 },
                 mousemoveElsePosition : function (x, y) {
-                    me._setFrame(ele, 3, modType, (me.fixColor.flag ? me.fixColor.color : me.common.overColor));
+                    setFrame(ele, 3, modType, (me.fixColor.flag ? me.fixColor.color : me.common.overColor));
                     setText(boxText, ele);
                 },
                 mousemoveEveryPosition : function (x, y) {
                     movePopUp(x + left + 10, y + top - 10, elePop, true, me._popUpFlags.id);
+                },
+                mousedownRightBottom : function (x, y) {
+                    setBox(disp, id, left, top, boxText);
                 },
                 mouseoutRightTop : function (x, y) {
                     changeCursor('default');
@@ -170,7 +174,7 @@
                     changeCursor('default');
                 },
                 mouseoutEveryPosition : function (x, y) {
-                    me._setFrame(ele, null, modType, (me.fixColor.flag ? me.fixColor.color : '#0000ff'));
+                    setFrame(ele, null, modType, (me.fixColor.flag ? me.fixColor.color : '#0000ff'));
                     setText(boxText, ele);
                     movePopUp(x, y, elePop, false, me._popUpFlags.id);
                     changeCursor('default');
@@ -190,7 +194,7 @@
 
             changePosition(ele, left, top, ele.textWidth, 40);
 
-            me._setFrame(ele, null, modType, '#0000ff');
+            setFrame(ele, null, modType, '#0000ff');
             me.id = id;
             setText(boxText, ele);
             this.each = culcPosition(id, left, top);
@@ -198,320 +202,374 @@
             me.ele = ele;
             me.modType = modType;
             me.boxText = boxText;
-        },
+        }
+    };
+
+    var setBox = function (disp, id, left, top, text) {
+        // box position
+        var box = document.getElementById("box" + id);
+        var boxW = parseInt(box.style.width, 10);
+        var boxH = parseInt(box.style.height, 10);
+
+        // set div box
+        var canvasDiv = document.createElement('div');
+        canvasDiv.id = 'boxCopy' + id;
+        canvasDiv.style.position = 'absolute';
+        canvasDiv.style.top = '0px'; // top
+        canvasDiv.style.left = '0px'; // left
+        canvasDiv.style.width = '300px';
+        canvasDiv.style.height = '40px';
+        canvasDiv.style.zIndex = 100;
+
+        var canvasElement = document.createElement('canvas');
+        canvasElement.id = 'eleCopy' + id;
+        canvasElement.className = 'eventBox';
+        canvasElement.style.width = '300px';
+        canvasElement.style.height = '40px';
+
+        box.appendChild(canvasDiv);
+        canvasDiv.appendChild(canvasElement);
+
+        var ctx = canvasElement.getContext('2d');
+        ctx.font = "normal bold " + 10 + "pt 'ＭＳ Ｐ明朝'";
+
+        canvasDiv.style.width = boxW + 'px';
+        canvasDiv.style.height = boxH + 'px';
+        canvasElement.style.width = boxW + 'px';
+        canvasElement.style.height = boxH + 'px';
 
 
 
 
 
+        // move event
+        canvasElement.addEventListener('mousemove', function(e) {
 
-
-
-        // mouse out event
-        _setFrame: function (ele, position, modType, color) {
-
-            var textWidth = ele.textWidth;
-            var context = ele.ctx;
-            var canvasElement = ele.canvas;
-            var range = 8 * 300/textWidth;
-
-            var height = canvasElement.height;
-            var width = canvasElement.width;
-
-            // drow square
-            context.clearRect(0, 0, width, height);
-            context.strokeStyle = color;
-            context.lineWidth = 14;
-            context.strokeRect(0, 0, width, height);
-
-            if (modType === 'mod') {
-
-                context.fillStyle = color;
-
-                switch (position) {
-                    case 'leftTop':
-                        context.fillRect(0, 0, range, range);
-                        break;
-                    case 'leftBottom':
-                        context.fillRect(0, height - range, range, range);
-                        break;
-                    case 'rightTop':
-                        context.fillRect(width - range, 0, range, range);
-                        break;
-                    case 'rightBottom':
-                        context.fillRect(width - range, height - range, range, range);
-                        break;
-                    case 'middleTop':
-                        context.fillRect(width/2 - range/2, 0, range, range);
-                        break;
-                    case 'middleBottom':
-                        context.fillRect(width/2 - range/2, height - range, range, range);
-                        break;
-                    case 3:
-                        context.fillRect(width - range, 0, range, range);
-                        context.fillRect(width - range, height - range, range, range);
-                        context.fillRect(width/2 - range/2, height - range, range, range);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        },
-
-
-
-        // mouse out event
-        _setCanvas: function (disp, id, left, top, boxText, events, callback) {
-
-            var out = {};
-
-            // set div box
-            var canvasDiv = document.createElement('div');
-            canvasDiv.id = 'box' + id;
-            canvasDiv.style.position = 'absolute';
-            canvasDiv.style.top = top + 'px';
-            canvasDiv.style.left = left + 'px';
-            canvasDiv.style.width = '300px'; // initial length
-            canvasDiv.style.height = '40px'; // initial length
-            // canvasDiv.style.backgroundColor = 'blue';
-
-            var canvasElement = document.createElement('canvas');
-            canvasElement.id = 'ele' + id;
-            canvasElement.className = 'eventBox';
-            canvasElement.style.width = '300px';
-            canvasElement.style.height = '40px';
-
-            document.getElementById(disp).appendChild(canvasDiv);
-            document.getElementById('box' + id).appendChild(canvasElement);
-
-            var ctx = canvasElement.getContext('2d');
-            ctx.font = "normal bold " + 10 + "pt 'ＭＳ Ｐ明朝'";
-            var textWidth = parseInt(ctx.measureText(boxText).width, 10) + 20;
-
-            // this
-            var me = this;
-
-            // move event
-            canvasElement.addEventListener('mousemove', function(e) {
-
-                me._eventsCallBack(e, canvasDiv, function (x, y) {
-                    // leftTop
-                    mouseOut(canvasElement, e, events, callback, 1);
-                    events.mousemoveLeftTop(canvasElement, x, y);
-                    callback.mousemoveLeftTop(x, y);
-                }, function (x, y) {
-                    // leftBottom
-                    mouseOut(canvasElement, e, events, callback, 2);
-                    events.mousemoveLeftBottom(canvasElement, x, y);
-                    callback.mousemoveLeftBottom(x, y);
-                }, function (x, y) {
-                    // rightTop
-                    mouseOut(canvasElement, e, events, callback, 3);
-                    events.mousemoveRightTop(canvasElement, x, y);
-                    callback.mousemoveRightTop(x, y);
-                }, function (x, y) {
-                    // rightBottom
-                    mouseOut(canvasElement, e, events, callback, 4);
-                    events.mousemoveRightBottom(canvasElement, x, y);
-                    callback.mousemoveRightBottom(x, y);
-                }, function (x, y) {
-                    // middleTop
-                    mouseOut(canvasElement, e, events, callback, 5);
-                    events.mousemoveMiddleTop(canvasElement, x, y);
-                    callback.mousemoveMiddleTop(x, y);
-                }, function (x, y) {
-                    // middleBottom
-                    mouseOut(canvasElement, e, events, callback, 6);
-                    events.mousemoveMiddleBottom(canvasElement, x, y);
-                    callback.mousemoveMiddleBottom(x, y);
-                }, function (x, y) {
-                    // elsePosition
-                    mouseOut(canvasElement, e, events, callback, 7);
-                    events.mousemoveElsePosition(canvasElement, x, y);
-                    callback.mousemoveElsePosition(x, y);
-                }, function (x, y) {
-                    // everyPosition
-                    events.mousemoveEveryPosition(canvasElement, x, y);
-                    callback.mousemoveEveryPosition(x, y);
-                });
-            }, true);
-
-            // click event
-            canvasElement.addEventListener("mousedown", function(e) {
-
-                if (e.button === 0) {
-
-                    me._eventsCallBack(e, canvasDiv, function (x, y) {
-                        // leftTop
-                        events.clickLeftTop(canvasElement, x, y);
-                    }, function (x, y) {
-                        // leftBottom
-                        events.clickLeftBottom(canvasElement, x, y);
-                    }, function (x, y) {
-                        // rightTop
-                        events.clickRightTop(canvasElement, x, y);
-                    }, function (x, y) {
-                        // rightBottom
-                        events.clickRightBottom(canvasElement, x, y);
-                    }, function (x, y) {
-                        // middleTop
-                        events.clickMiddleTop(canvasElement, x, y);
-                    }, function (x, y) {
-                        // middleBottom
-                        events.clickMiddleBottom(canvasElement, x, y);
-                    }, function (x, y) {
-                        // elsePosition
-                        events.clickElsePosition(canvasElement, x, y);
-                    }, function (x, y) {
-                        // everyPosition
-                        events.clickEveryPosition(canvasElement, x, y);
-                    });
-                }
-            }, true);
-
-            // mouseup event
-            canvasElement.addEventListener("mouseup", function(e) {
-
-                me._eventsCallBack(e, canvasDiv, function (x, y) {
-                    // leftTop
-                    events.mouseupLeftTop(canvasElement, x, y);
-                }, function (x, y) {
-                    // leftBottom
-                    events.mouseupLeftBottom(canvasElement, x, y);
-                }, function (x, y) {
-                    // rightTop
-                    events.mouseupRightTop(canvasElement, x, y);
-                }, function (x, y) {
-                    // rightBottom
-                    events.mouseupRightBottom(canvasElement, x, y);
-                }, function (x, y) {
-                    // middleTop
-                    events.mouseupMiddleTop(canvasElement, x, y);
-                }, function (x, y) {
-                    // middleBottom
-                    events.mouseupMiddleBottom(canvasElement, x, y);
-                }, function (x, y) {
-                    // elsePosition
-                    events.mouseupElsePosition(canvasElement, x, y);
-                }, function (x, y) {
-                    // everyPosition
-                    events.mouseupEveryPosition(canvasElement, x, y);
-                });
-            }, true);
-
-            // click right event
-            clickRight(function (e) {
-
-                me._eventsCallBack(e, canvasDiv, function (x, y) {
-                    // leftTop
-                    events.clickRightLeftTop(canvasElement, x, y);
-                }, function (x, y) {
-                    // leftBottom
-                    events.clickRightLeftBottom(canvasElement, x, y);
-                }, function (x, y) {
-                    // rightTop
-                    events.clickRightRightTop(canvasElement, x, y);
-                }, function (x, y) {
-                    // rightBottom
-                    events.clickRightRightBottom(canvasElement, x, y);
-                }, function (x, y) {
-                    // middleTop
-                    events.clickRightMiddleTop(canvasElement, x, y);
-                }, function (x, y) {
-                    // middleBottom
-                    events.clickRightMiddleBottom(canvasElement, x, y);
-                }, function (x, y) {
-                    // elsePosition
-                    events.clickRightElsePosition(canvasElement, x, y);
-                }, function (x, y) {
-                    // everyPosition
-                    events.clickRightEveryPosition(canvasElement, x, y);
-                    callback.clickRightEveryPosition(x, y);
-                });
-            });
-
-            // move out
-            canvasElement.addEventListener("mouseout", function(e) {
-
-                mouseOut(canvasElement, e, events, callback, 0);
-            }, true);
-
-            out.ctx = ctx;
-            out.textWidth = textWidth;
-            out.div = canvasDiv;
-            out.canvas = canvasElement;
-            return out;
-        },
-
-
-
-
-
-
-
-
-
-
-
-        _eventsCallBack: function (e, canvasDiv, leftTop, leftBottom, rightTop, rightBottom, middleTop, middleBottom, elsePosition, everyPosition) {
-
-            var rect = e.target.getBoundingClientRect();
+            var rect = window.event.target.getBoundingClientRect();
+            // var rect = e.target.getBoundingClientRect();
             var mouseX = e.clientX - rect.left;
             var mouseY = e.clientY - rect.top;
 
-            // left top box
-            if (
-                (mouseX < 8) &&
-                (mouseY < 8)
-            ) {
-                leftTop(mouseX, mouseY);
+            // everyPosition
+            canvasDiv.style.top = mouseY - boxH + 'px';
+            canvasDiv.style.left = mouseX - boxW + 'px';
+        }, true);
 
-            // left bottom box
-            } else if (
-                (mouseX < 8) &&
-                (mouseY > parseInt(canvasDiv.style.height) - 8)
-            ) {
-                leftBottom(mouseX, mouseY);
 
-            // right bottom box
-            } else if (
-                (mouseX > parseInt(canvasDiv.style.width) - 8) &&
-                (mouseY < 8)
-            ) {
-                rightTop(mouseX, mouseY);
 
-            // right bottom box
-            } else if (
-                (mouseX > parseInt(canvasDiv.style.width) - 8) &&
-                (mouseY > parseInt(canvasDiv.style.height) - 8)
-            ) {
-                rightBottom(mouseX, mouseY);
 
-            // middle top box
-            } else if (
-                (parseInt(canvasDiv.style.width)/2 - 8/2 < mouseX && mouseX < parseInt(canvasDiv.style.width)/2 + 8/2) &&
-                (mouseY < 8)
-            ) {
-                middleTop(mouseX, mouseY);
 
-            // middle bottom box
-            } else if (
-                (parseInt(canvasDiv.style.width)/2 - 8/2 < mouseX && mouseX < parseInt(canvasDiv.style.width)/2 + 8/2) &&
-                (mouseY > parseInt(canvasDiv.style.height) - 8)
-            ) {
-                middleBottom(mouseX, mouseY);
 
-            // else position
-            } else {
-                elsePosition(mouseX, mouseY);
+
+        // drow square
+        ctx.beginPath();
+        ctx.clearRect(0, 0, 300, 150);
+        ctx.strokeStyle = '#ffa500';
+        ctx.lineWidth = 14;
+        ctx.strokeRect(0, 0, 300, 150);
+
+        // drow text
+        ctx.scale(300 / boxW, 150 / 20);
+        ctx.translate(0, -2);
+        ctx.fillStyle = '#000000';
+        ctx.fillText(text, 10, 18);
+        ctx.translate(0, 2);
+        ctx.scale(boxW / 300, 20 / 150);
+    };
+
+    // mouse out event
+    var setFrame = function (ele, position, modType, color) {
+
+        var textWidth = ele.textWidth;
+        var context = ele.ctx;
+        var canvasElement = ele.canvas;
+        var range = 8 * 300/textWidth;
+
+        var height = canvasElement.height;
+        var width = canvasElement.width;
+
+        // drow square
+        context.clearRect(0, 0, width, height);
+        context.strokeStyle = color;
+        context.lineWidth = 14;
+        context.strokeRect(0, 0, width, height);
+
+        if (modType === 'mod') {
+
+            context.fillStyle = color;
+
+            switch (position) {
+                case 'leftTop':
+                    context.fillRect(0, 0, range, range);
+                    break;
+                case 'leftBottom':
+                    context.fillRect(0, height - range, range, range);
+                    break;
+                case 'rightTop':
+                    context.fillRect(width - range, 0, range, range);
+                    break;
+                case 'rightBottom':
+                    context.fillRect(width - range, height - range, range, range);
+                    break;
+                case 'middleTop':
+                    context.fillRect(width/2 - range/2, 0, range, range);
+                    break;
+                case 'middleBottom':
+                    context.fillRect(width/2 - range/2, height - range, range, range);
+                    break;
+                case 3:
+                    context.fillRect(width - range, 0, range, range);
+                    context.fillRect(width - range, height - range, range, range);
+                    context.fillRect(width/2 - range/2, height - range, range, range);
+                    break;
+                default:
+                    break;
             }
-
-            // every position
-            everyPosition(mouseX, mouseY);
         }
     };
 
 
+    // mouse out event
+    var setCanvas = function (disp, id, left, top, boxText, events, callback) {
+
+        var out = {};
+
+        // set div box
+        var canvasDiv = document.createElement('div');
+        canvasDiv.id = 'box' + id;
+        canvasDiv.style.position = 'absolute';
+        canvasDiv.style.top = top + 'px';
+        canvasDiv.style.left = left + 'px';
+        canvasDiv.style.width = '300px'; // initial length
+        canvasDiv.style.height = '40px'; // initial length
+        // canvasDiv.style.backgroundColor = 'blue';
+
+        var canvasElement = document.createElement('canvas');
+        canvasElement.id = 'ele' + id;
+        canvasElement.className = 'eventBox';
+        canvasElement.style.width = '300px';
+        canvasElement.style.height = '40px';
+
+        document.getElementById(disp).appendChild(canvasDiv);
+        document.getElementById('box' + id).appendChild(canvasElement);
+
+        var ctx = canvasElement.getContext('2d');
+        ctx.font = "normal bold " + 10 + "pt 'ＭＳ Ｐ明朝'";
+        var textWidth = parseInt(ctx.measureText(boxText).width, 10) + 20;
+
+        // this
+        var me = this;
+
+        // move event
+        canvasElement.addEventListener('mousemove', function(e) {
+
+            eventsCallBack(e, canvasDiv, function (x, y) {
+                // leftTop
+                mouseOut(canvasElement, e, events, callback, 1);
+                events.mousemoveLeftTop(canvasElement, x, y);
+                callback.mousemoveLeftTop(x, y);
+            }, function (x, y) {
+                // leftBottom
+                mouseOut(canvasElement, e, events, callback, 2);
+                events.mousemoveLeftBottom(canvasElement, x, y);
+                callback.mousemoveLeftBottom(x, y);
+            }, function (x, y) {
+                // rightTop
+                mouseOut(canvasElement, e, events, callback, 3);
+                events.mousemoveRightTop(canvasElement, x, y);
+                callback.mousemoveRightTop(x, y);
+            }, function (x, y) {
+                // rightBottom
+                mouseOut(canvasElement, e, events, callback, 4);
+                events.mousemoveRightBottom(canvasElement, x, y);
+                callback.mousemoveRightBottom(x, y);
+            }, function (x, y) {
+                // middleTop
+                mouseOut(canvasElement, e, events, callback, 5);
+                events.mousemoveMiddleTop(canvasElement, x, y);
+                callback.mousemoveMiddleTop(x, y);
+            }, function (x, y) {
+                // middleBottom
+                mouseOut(canvasElement, e, events, callback, 6);
+                events.mousemoveMiddleBottom(canvasElement, x, y);
+                callback.mousemoveMiddleBottom(x, y);
+            }, function (x, y) {
+                // elsePosition
+                mouseOut(canvasElement, e, events, callback, 7);
+                events.mousemoveElsePosition(canvasElement, x, y);
+                callback.mousemoveElsePosition(x, y);
+            }, function (x, y) {
+                // everyPosition
+                events.mousemoveEveryPosition(canvasElement, x, y);
+                callback.mousemoveEveryPosition(x, y);
+            });
+        }, true);
+
+        // mousedown event
+        canvasElement.addEventListener("mousedown", function(e) {
+
+            if (e.button === 0) {
+
+                eventsCallBack(e, canvasDiv, function (x, y) {
+                    // leftTop
+                    events.mousedownLeftTop(canvasElement, x, y);
+                }, function (x, y) {
+                    // leftBottom
+                    events.mousedownLeftBottom(canvasElement, x, y);
+                }, function (x, y) {
+                    // rightTop
+                    events.mousedownRightTop(canvasElement, x, y);
+                }, function (x, y) {
+                    // rightBottom
+                    events.mousedownRightBottom(canvasElement, x, y);
+                    callback.mousedownRightBottom(x, y);
+                }, function (x, y) {
+                    // middleTop
+                    events.mousedownMiddleTop(canvasElement, x, y);
+                }, function (x, y) {
+                    // middleBottom
+                    events.mousedownMiddleBottom(canvasElement, x, y);
+                }, function (x, y) {
+                    // elsePosition
+                    events.mousedownElsePosition(canvasElement, x, y);
+                }, function (x, y) {
+                    // everyPosition
+                    events.mousedownEveryPosition(canvasElement, x, y);
+                });
+            }
+        }, true);
+
+        // mouseup event
+        canvasElement.addEventListener("mouseup", function(e) {
+
+            eventsCallBack(e, canvasDiv, function (x, y) {
+                // leftTop
+                events.mouseupLeftTop(canvasElement, x, y);
+            }, function (x, y) {
+                // leftBottom
+                events.mouseupLeftBottom(canvasElement, x, y);
+            }, function (x, y) {
+                // rightTop
+                events.mouseupRightTop(canvasElement, x, y);
+            }, function (x, y) {
+                // rightBottom
+                events.mouseupRightBottom(canvasElement, x, y);
+            }, function (x, y) {
+                // middleTop
+                events.mouseupMiddleTop(canvasElement, x, y);
+            }, function (x, y) {
+                // middleBottom
+                events.mouseupMiddleBottom(canvasElement, x, y);
+            }, function (x, y) {
+                // elsePosition
+                events.mouseupElsePosition(canvasElement, x, y);
+            }, function (x, y) {
+                // everyPosition
+                events.mouseupEveryPosition(canvasElement, x, y);
+            });
+        }, true);
+
+        // click right event
+        clickRight(function (e) {
+
+            eventsCallBack(e, canvasDiv, function (x, y) {
+                // leftTop
+                events.clickRightLeftTop(canvasElement, x, y);
+            }, function (x, y) {
+                // leftBottom
+                events.clickRightLeftBottom(canvasElement, x, y);
+            }, function (x, y) {
+                // rightTop
+                events.clickRightRightTop(canvasElement, x, y);
+            }, function (x, y) {
+                // rightBottom
+                events.clickRightRightBottom(canvasElement, x, y);
+            }, function (x, y) {
+                // middleTop
+                events.clickRightMiddleTop(canvasElement, x, y);
+            }, function (x, y) {
+                // middleBottom
+                events.clickRightMiddleBottom(canvasElement, x, y);
+            }, function (x, y) {
+                // elsePosition
+                events.clickRightElsePosition(canvasElement, x, y);
+            }, function (x, y) {
+                // everyPosition
+                events.clickRightEveryPosition(canvasElement, x, y);
+                callback.clickRightEveryPosition(x, y);
+            });
+        });
+
+        // move out
+        canvasElement.addEventListener("mouseout", function(e) {
+
+            mouseOut(canvasElement, e, events, callback, 0);
+        }, true);
+
+        out.ctx = ctx;
+        out.textWidth = textWidth;
+        out.div = canvasDiv;
+        out.canvas = canvasElement;
+        return out;
+    };
+
+
+    var eventsCallBack = function (e, canvasDiv, leftTop, leftBottom, rightTop, rightBottom, middleTop, middleBottom, elsePosition, everyPosition) {
+
+        var rect = e.target.getBoundingClientRect();
+        var mouseX = e.clientX - rect.left;
+        var mouseY = e.clientY - rect.top;
+
+        // left top box
+        if (
+            (mouseX < 8) &&
+            (mouseY < 8)
+        ) {
+            leftTop(mouseX, mouseY);
+
+        // left bottom box
+        } else if (
+            (mouseX < 8) &&
+            (mouseY > parseInt(canvasDiv.style.height) - 8)
+        ) {
+            leftBottom(mouseX, mouseY);
+
+        // right bottom box
+        } else if (
+            (mouseX > parseInt(canvasDiv.style.width) - 8) &&
+            (mouseY < 8)
+        ) {
+            rightTop(mouseX, mouseY);
+
+        // right bottom box
+        } else if (
+            (mouseX > parseInt(canvasDiv.style.width) - 8) &&
+            (mouseY > parseInt(canvasDiv.style.height) - 8)
+        ) {
+            rightBottom(mouseX, mouseY);
+
+        // middle top box
+        } else if (
+            (parseInt(canvasDiv.style.width)/2 - 8/2 < mouseX && mouseX < parseInt(canvasDiv.style.width)/2 + 8/2) &&
+            (mouseY < 8)
+        ) {
+            middleTop(mouseX, mouseY);
+
+        // middle bottom box
+        } else if (
+            (parseInt(canvasDiv.style.width)/2 - 8/2 < mouseX && mouseX < parseInt(canvasDiv.style.width)/2 + 8/2) &&
+            (mouseY > parseInt(canvasDiv.style.height) - 8)
+        ) {
+            middleBottom(mouseX, mouseY);
+
+        // else position
+        } else {
+            elsePosition(mouseX, mouseY);
+        }
+
+        // every position
+        everyPosition(mouseX, mouseY);
+    };
 
     // culcation eventBox position
     var culcPosition = function (id, left, top) {
@@ -742,7 +800,7 @@
             });
         }, true);
 
-        // click event
+        // mousedown event
         canvasDiv.addEventListener("mousedown", function(e) {
 
             if (e.button === 0) {

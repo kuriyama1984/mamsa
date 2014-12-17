@@ -39,8 +39,8 @@ var databases = [
     {id: '1003', type: 'eventbox', x: 300, y: 300, title: '調査内容3', text: '-----------------------------------'},
     {id: '1004', type: 'eventbox', x: 300, y: 380, title: '調査内容4', text: '-----------------------------------'},
     {id: '1005', type: 'line', x: 0, y: 0, title: '', text: '', from: '1001', to: '1003'},
-    {id: '1006', type: 'line', x: 0, y: 0, title: '', text: '', from: '1002', to: '1003'},
-    {id: '1007', type: 'line', x: 0, y: 0, title: '', text: '', from: '1004', to: '1001'}
+    {id: '1006', type: 'arrow', x: 0, y: 0, title: '', text: '', from: '1002', to: '1003'},
+    {id: '1007', type: 'arrow', x: 0, y: 0, title: '', text: '', from: '1004', to: '1001'}
 ];
 
 

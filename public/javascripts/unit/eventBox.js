@@ -45,9 +45,6 @@
 
     eventBox.prototype = {
 
-        // modType: '', // mod
-        // boxText: '',
-        // colorFlag: true,
         fixColor: {
             flag: false,
             color: '#0000ff'
@@ -74,7 +71,6 @@
         test: '',
         id: '',
 
-
         changeColor: function (flag, color) {
             this.fixColor.flag = flag;
             this.fixColor.color = color;
@@ -88,10 +84,6 @@
         },
 
         _popUpFlags: {},
-
-
-
-
 
         /**
         * setType1 is text-popup eventBox with moveEvent, clickEvent, clickRightEvent, mouseOutEvent <br /><br />
@@ -107,10 +99,12 @@
         *
         * @method setType1
         * @param {string} tag name
+        * @param {string} tag id
         * @param {number} position x
         * @param {number} position y
-        * @param {number} width
-        * @param {number} height
+        * @param {string} text
+        * @param {string} pop up text
+        * @param {string} base or mod
         * @param {object} callback with events.<event name>
         */
         set: function (disp, id, left, top, text, textPop, type, events) {
@@ -159,7 +153,7 @@
                     movePopUp(x + left + 10, y + top - 10, elePop, true, me._popUpFlags.id);
                 },
                 mousedownRightBottom : function (x, y) {
-                    setBox(disp, id, left, top, boxText);
+                    // setBox(disp, id, left, top, boxText);
                 },
                 mouseoutRightTop : function (x, y) {
                     changeCursor('default');
@@ -202,9 +196,90 @@
             me.ele = ele;
             me.modType = modType;
             me.boxText = boxText;
+        },
+
+        /**
+        * copy don't contain events <br /><br /> 
+        *
+        * @method copy
+        * @param {string} tag name
+        * @param {number} position x
+        * @param {number} position y
+        * @param {string} text
+        */
+        copy: function (disp, id, left, top, text) {
+            // box position
+            var mapObj = document.getElementById('mapObj');
+            var box = document.getElementById('box' + id);
+            var boxW = parseInt(box.style.width, 10);
+            var boxH = parseInt(box.style.height, 10);
+
+            // set div box
+            var canvasDiv = document.createElement('div');
+            canvasDiv.id = 'boxCopy' + id;
+            canvasDiv.style.position = 'absolute';
+            canvasDiv.style.top = '0px'; // top
+            canvasDiv.style.left = '0px'; // left
+            canvasDiv.style.width = '300px';
+            canvasDiv.style.height = '40px';
+            canvasDiv.style.zIndex = 100;
+
+            var canvasElement = document.createElement('canvas');
+            canvasElement.id = 'eleCopy' + id;
+            canvasElement.className = 'eventBox';
+            canvasElement.style.width = '300px';
+            canvasElement.style.height = '40px';
+
+            mapObj.appendChild(canvasDiv);
+            canvasDiv.appendChild(canvasElement);
+
+            var ctx = canvasElement.getContext('2d');
+            ctx.font = "normal bold " + 10 + "pt 'ＭＳ Ｐ明朝'";
+
+            canvasDiv.style.width = boxW + 'px';
+            canvasDiv.style.height = boxH + 'px';
+            canvasElement.style.width = boxW + 'px';
+            canvasElement.style.height = boxH + 'px';
+
+            // move event
+            canvasElement.addEventListener('mousemove', function(e) {
+
+                var rect = window.event.target.getBoundingClientRect();
+                // var rect = e.target.getBoundingClientRect();
+                var mouseX = e.clientX - rect.left;
+                var mouseY = e.clientY - rect.top;
+
+                // everyPosition
+                canvasDiv.style.top = mouseY - boxH + 'px';
+                canvasDiv.style.left = mouseX - boxW + 'px';
+            }, true);
+
+            // drow square
+            ctx.beginPath();
+            ctx.clearRect(0, 0, 300, 150);
+            ctx.strokeStyle = '#ffa500';
+            ctx.lineWidth = 14;
+            ctx.strokeRect(0, 0, 300, 150);
+
+            // drow text
+            ctx.scale(300 / boxW, 150 / 20);
+            ctx.translate(0, -2);
+            ctx.fillStyle = '#000000';
+            ctx.fillText(text, 10, 18);
+            ctx.translate(0, 2);
+            ctx.scale(boxW / 300, 20 / 150);
+
+            return {
+                flag: true,
+                id: id,
+                head:'boxCopy',
+                w: boxW,
+                h: boxH
+            };
         }
     };
 
+/*
     var setBox = function (disp, id, left, top, text) {
         // box position
         var box = document.getElementById("box" + id);
@@ -238,10 +313,6 @@
         canvasElement.style.width = boxW + 'px';
         canvasElement.style.height = boxH + 'px';
 
-
-
-
-
         // move event
         canvasElement.addEventListener('mousemove', function(e) {
 
@@ -254,12 +325,6 @@
             canvasDiv.style.top = mouseY - boxH + 'px';
             canvasDiv.style.left = mouseX - boxW + 'px';
         }, true);
-
-
-
-
-
-
 
         // drow square
         ctx.beginPath();
@@ -276,6 +341,7 @@
         ctx.translate(0, 2);
         ctx.scale(boxW / 300, 20 / 150);
     };
+*/
 
     // mouse out event
     var setFrame = function (ele, position, modType, color) {

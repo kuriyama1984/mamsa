@@ -58,6 +58,9 @@ window.addEventListener("load", function() {
     maps.show(databases, {
         saveLine: function (lineObj) {
             console.log(lineObj);
+        },
+        save: function (_databases) {
+            console.log(_databases);
         }
     });
 

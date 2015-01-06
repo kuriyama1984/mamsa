@@ -17,6 +17,11 @@
     var moveX = 0;
     var moveY = 0;
 
+    // -----------------------------------
+    //  load util and unit classes
+    // -----------------------------------
+    var error = Object.create(mamsa.error.prototype);
+
     var changeCursor = function (cursor) {
         document.body.style.cursor = cursor;
     };
@@ -70,6 +75,8 @@
         boxText: '',
         test: '',
         id: '',
+        boxW: 0,
+        boxH: 0,
 
         changeColor: function (flag, color) {
             this.fixColor.flag = flag;
@@ -86,7 +93,7 @@
         _popUpFlags: {},
 
         /**
-        * setType1 is text-popup eventBox with moveEvent, clickEvent, clickRightEvent, mouseOutEvent <br /><br />
+        * set is text-popup eventBox with moveEvent, clickEvent, clickRightEvent, mouseOutEvent <br /><br />
         * events callbacks are bellow <br />
         * events.mousemoveLeftTop events.clickLeftTop events.clickRightLeftTop events.mouseoutLeftTop <br />
         * events.mousemoveLeftBottom events.clickLeftBottom events.clickRightLeftBottom events.mouseoutLeftBottom <br />
@@ -97,7 +104,7 @@
         * events.mousemoveElsePosition events.clickElsePosition events.clickRightElsePosition events.mouseoutElsePosition <br />
         * events.mousemoveEveryPosition events.clickEveryPosition events.clickRightEveryPosition events.mouseoutEveryPosition 
         *
-        * @method setType1
+        * @method set
         * @param {string} tag name
         * @param {string} tag id
         * @param {number} position x
@@ -190,6 +197,8 @@
 
             setFrame(ele, null, modType, '#0000ff');
             me.id = id;
+            me.boxW = ele.textWidth;
+            me.boxH = 40;
             setText(boxText, ele);
             this.each = culcPosition(id, left, top);
 
@@ -209,7 +218,7 @@
         */
         copy: function (disp, id, left, top, text) {
             // box position
-            var mapObj = document.getElementById('mapObj');
+            var mapObj = document.getElementById(disp);
             var box = document.getElementById('box' + id);
             var boxW = parseInt(box.style.width, 10);
             var boxH = parseInt(box.style.height, 10);
@@ -276,72 +285,422 @@
                 w: boxW,
                 h: boxH
             };
+        },
+
+        /**
+        * edit event box <br /><br />
+        *
+        * @method copy
+        * @param {string} tag name
+        * @param {number} position x
+        * @param {number} position y
+        * @param {string} text
+        */
+        edit: function (disp, id, left, top, text, titleKana, textPop, callback) {
+            var editor = document.getElementById('editor');
+            if (editor) {
+                editor.remove();
+            }
+
+            // box position
+            var mapObj = document.getElementById(disp);
+
+            // set div box
+            var editorDiv = document.createElement('div');
+            editorDiv.id = 'editor';
+            editorDiv.style.position = 'absolute';
+            editorDiv.style.top = (top - 10) + 'px';
+            editorDiv.style.left = (left + this.boxW + 10) + 'px';
+            editorDiv.style.backgroundColor = 'rgba(255, 255, 0, 0.9)';
+
+            // <tr>
+            //     <td colspan=2><span id="editorClose">[×]</span></td>
+            // </tr>
+            var tr0 = document.createElement('tr');
+            var td0 = document.createElement('td');
+            var span0 = document.createElement('span');
+            span0.id = 'editorClose';
+            span0.addEventListener('click', function () {
+                editorDiv.remove();
+            }, false);
+            span0.appendChild(document.createTextNode('[×]'));
+            td0.appendChild(span0);
+            td0.colSpan = '2';
+            tr0.appendChild(td0);
+
+            // <tr>
+            //     <td colspan=2 id="insertErr"></td>
+            // </tr>
+            var tr1 = document.createElement('tr');
+            var td1 = document.createElement('td');
+            var div1 = document.createElement('div');
+            div1.id = 'insertErr';
+            td1.colSpan = '2';
+            td1.appendChild(div1);
+            tr1.appendChild(td1);
+
+            // <tr>
+            //     <td>項目</td>
+            //     <td><input type="text" id="pt_name" size="50" maxlength="100"></td>
+            // </tr>
+            var tr2 = document.createElement('tr');
+            var td2_1 = document.createElement('td');
+            td2_1.appendChild(document.createTextNode('項目'));
+            var td2_2 = document.createElement('td');
+            var input2 = document.createElement('input');
+            input2.type = 'text';
+            input2.id = 'pt_name';
+            input2.value = text;
+            input2.size = 50;
+            input2.maxlength = 100;
+            td2_2.appendChild(input2);
+            tr2.appendChild(td2_1);
+            tr2.appendChild(td2_2);
+
+            // <tr>
+            //     <td>カタカナ</td>
+            //     <td><input type="text" id="pt_name2" size="50" maxlength="100"></td>
+            // </tr>
+            var tr3 = document.createElement('tr');
+            var td3_1 = document.createElement('td');
+            td3_1.appendChild(document.createTextNode('カタカナ'));
+            var td3_2 = document.createElement('td');
+            var input3 = document.createElement('input');
+            input3.type = 'text';
+            input3.id = 'pt_name2';
+            input3.size = 50;
+            input3.maxlength = 100;
+            input3.value = titleKana;
+            td3_2.appendChild(input3);
+            tr3.appendChild(td3_1);
+            tr3.appendChild(td3_2);
+
+            // <tr>
+            //     <td>説明</td>
+            //     <td><textarea id="pt_explain" cols=80 rows=12></textarea></td>
+            // </tr>
+            var tr4 = document.createElement('tr');
+            var td4_1 = document.createElement('td');
+            td4_1.appendChild(document.createTextNode('説明'));
+            var td4_2 = document.createElement('td');
+            var textarea4 = document.createElement('textarea');
+            textarea4.id = 'pt_explain';
+            textarea4.cols = 80;
+            textarea4.rows = 12;
+            textarea4.value = textPop;
+            td4_2.appendChild(textarea4);
+            tr4.appendChild(td4_1);
+            tr4.appendChild(td4_2);
+
+            // <tr>
+            //     <td colspan=2>
+            //         <input type="radio" id="ps_type1" value="shikaku" checked>四角枠
+            //         <input type="radio" id="ps_type2" value="ring">背景
+            //     </td>
+            // </tr>
+            var tr5 = document.createElement('tr');
+            var td5_1 = document.createElement('td');
+            td5_1.colSpan = '2';
+            tr5.appendChild(td5_1);
+            var text5_1 = document.createTextNode('x軸：');
+            var input5_1 = document.createElement('input');
+            input5_1.type = 'text';
+            input5_1.id = 'ps_x';
+            input5_1.value = left;
+            input5_1.style.width = 40 + 'px';
+            var text5_2 = document.createTextNode('　　y軸：');
+            var input5_2 = document.createElement('input');
+            input5_2.type = 'text';
+            input5_2.id = 'ps_y';
+            input5_2.value = top;
+            input5_2.style.width = 40 + 'px';
+            td5_1.appendChild(text5_1);
+            td5_1.appendChild(input5_1);
+            td5_1.appendChild(text5_2);
+            td5_1.appendChild(input5_2);
+
+            // <tr>
+            //     <td colspan=2>
+            //         <input id="editorAdd" type="button" value="追加する" onclick="submit()">
+            //     </td>
+            // </tr>
+            var tr6 = document.createElement('tr');
+            var td6_1 = document.createElement('td');
+            td6_1.colSpan = '2';
+            var input6_1 = document.createElement('input');
+            input6_1.type = 'button';
+            input6_1.id = 'editorMod';
+            input6_1.value = '編集する';
+            input6_1.addEventListener('click', function () {
+                var result = submit(input2, input3, textarea4, null, null, input5_1.value, input5_2.value);
+                if (result.flag) {
+                    callback(result);
+                }
+                div1.innerHTML = '<font style="color:red;">' + result.msg + '</font>';
+            }, false);
+            tr6.appendChild(td6_1);
+            td6_1.appendChild(input6_1);
+
+            // tbody
+            var tbody = document.createElement('tbody');
+            tbody.appendChild(tr0);
+            tbody.appendChild(tr1);
+            tbody.appendChild(tr2);
+            tbody.appendChild(tr3);
+            tbody.appendChild(tr4);
+            tbody.appendChild(tr5);
+            tbody.appendChild(tr6);
+
+            // table
+            var table = document.createElement('table');
+            table.id = 'editor';
+            table.appendChild(tbody);
+
+            // form
+            var form = document.createElement('form');
+            form.id = 'form1';
+            form.appendChild(table);
+
+            // editorDiv
+            editorDiv.appendChild(form);
+
+            // set
+            mapObj.appendChild(editorDiv);
+        },
+
+        /**
+        * create event box <br /><br />
+        *
+        * @method copy
+        * @param {string} tag name
+        * @param {number} position x
+        * @param {number} position y
+        * @param {string} text
+        */
+        create: function (disp, id, left, top, callback) {
+            var editor = document.getElementById('editor');
+            if (editor) {
+                editor.remove();
+            }
+
+            // box position
+            var mapObj = document.getElementById(disp);
+
+            // set div box
+            var editorDiv = document.createElement('div');
+            editorDiv.id = 'editor';
+            editorDiv.style.position = 'absolute';
+            editorDiv.style.top = (top - 10) + 'px';
+            editorDiv.style.left = (left + this.boxW + 10) + 'px';
+            editorDiv.style.backgroundColor = 'rgba(255, 255, 0, 0.9)';
+
+            // <tr>
+            //     <td colspan=2><span id="editorClose">[×]</span></td>
+            // </tr>
+            var tr0 = document.createElement('tr');
+            var td0 = document.createElement('td');
+            var span0 = document.createElement('span');
+            span0.id = 'editorClose';
+            span0.addEventListener('click', function () {
+                editorDiv.remove();
+            }, false);
+            span0.appendChild(document.createTextNode('[×]'));
+            td0.appendChild(span0);
+            td0.colSpan = '2';
+            tr0.appendChild(td0);
+
+            // <tr>
+            //     <td colspan=2 id="insertErr"></td>
+            // </tr>
+            var tr1 = document.createElement('tr');
+            var td1 = document.createElement('td');
+            var div1 = document.createElement('div');
+            div1.id = 'insertErr';
+            td1.colSpan = '2';
+            td1.appendChild(div1);
+            tr1.appendChild(td1);
+
+            // <tr>
+            //     <td>項目</td>
+            //     <td><input type="text" id="pt_name" size="50" maxlength="100"></td>
+            // </tr>
+            var tr2 = document.createElement('tr');
+            var td2_1 = document.createElement('td');
+            td2_1.appendChild(document.createTextNode('項目'));
+            var td2_2 = document.createElement('td');
+            var input2 = document.createElement('input');
+            input2.type = 'text';
+            input2.id = 'pt_name';
+            input2.value = '';
+            input2.size = 50;
+            input2.maxlength = 100;
+            td2_2.appendChild(input2);
+            tr2.appendChild(td2_1);
+            tr2.appendChild(td2_2);
+
+            // <tr>
+            //     <td>カタカナ</td>
+            //     <td><input type="text" id="pt_name2" size="50" maxlength="100"></td>
+            // </tr>
+            var tr3 = document.createElement('tr');
+            var td3_1 = document.createElement('td');
+            td3_1.appendChild(document.createTextNode('カタカナ'));
+            var td3_2 = document.createElement('td');
+            var input3 = document.createElement('input');
+            input3.type = 'text';
+            input3.id = 'pt_name2';
+            input3.size = 50;
+            input3.maxlength = 100;
+            td3_2.appendChild(input3);
+            tr3.appendChild(td3_1);
+            tr3.appendChild(td3_2);
+
+            // <tr>
+            //     <td>説明</td>
+            //     <td><textarea id="pt_explain" cols=80 rows=12></textarea></td>
+            // </tr>
+            var tr4 = document.createElement('tr');
+            var td4_1 = document.createElement('td');
+            td4_1.appendChild(document.createTextNode('説明'));
+            var td4_2 = document.createElement('td');
+            var textarea4 = document.createElement('textarea');
+            textarea4.id = 'pt_explain';
+            textarea4.cols = 80;
+            textarea4.rows = 12;
+            td4_2.appendChild(textarea4);
+            tr4.appendChild(td4_1);
+            tr4.appendChild(td4_2);
+
+            // <tr>
+            //     <td colspan=2>
+            //         <input type="radio" id="ps_type1" value="shikaku" checked>四角枠
+            //         <input type="radio" id="ps_type2" value="ring">背景
+            //     </td>
+            // </tr>
+            var tr5 = document.createElement('tr');
+            var td5_1 = document.createElement('td');
+            td5_1.colSpan = '2';
+            tr5.appendChild(td5_1);
+            var input5_1 = document.createElement('input');
+            input5_1.type = 'radio';
+            input5_1.id = 'ps_type1';
+            input5_1.name = 'ps_type';
+            input5_1.value = 'shikaku';
+            input5_1.checked = 'checked';
+            var text5_1 = document.createTextNode('四角枠　');
+            var input5_2 = document.createElement('input');
+            input5_2.type = 'radio';
+            input5_2.id = 'ps_type2';
+            input5_2.name = 'ps_type';
+            input5_2.value = 'ring';
+            var text5_2 = document.createTextNode('背景');
+            td5_1.appendChild(input5_1);
+            td5_1.appendChild(text5_1);
+            td5_1.appendChild(input5_2);
+            td5_1.appendChild(text5_2);
+
+            // <tr>
+            //     <td colspan=2>
+            //         <input id="editorAdd" type="button" value="追加する" onclick="submit()">
+            //     </td>
+            // </tr>
+            var tr6 = document.createElement('tr');
+            var td6_1 = document.createElement('td');
+            td6_1.colSpan = '2';
+            var input6_1 = document.createElement('input');
+            input6_1.type = 'button';
+            input6_1.id = 'editorAdd';
+            input6_1.value = '追加する';
+            input6_1.addEventListener('click', function () {
+                var result = submit(input2, input3, textarea4, input5_1, input5_2, left, top);
+                if (result.flag) {
+                    callback(result);
+                }
+                div1.innerHTML = '<font style="color:red;">' + result.msg + '</font>';
+            }, false);
+
+            tr6.appendChild(td6_1);
+            td6_1.appendChild(input6_1);
+
+            // tbody
+            var tbody = document.createElement('tbody');
+            tbody.appendChild(tr0);
+            tbody.appendChild(tr1);
+            tbody.appendChild(tr2);
+            tbody.appendChild(tr3);
+            tbody.appendChild(tr4);
+            tbody.appendChild(tr5);
+            tbody.appendChild(tr6);
+
+            // table
+            var table = document.createElement('table');
+            table.id = 'editor';
+            table.appendChild(tbody);
+
+            // form
+            var form = document.createElement('form');
+            form.id = 'form1';
+            form.appendChild(table);
+
+            // editorDiv
+            editorDiv.appendChild(form);
+
+            // set
+            mapObj.appendChild(editorDiv);
         }
     };
 
-/*
-    var setBox = function (disp, id, left, top, text) {
-        // box position
-        var box = document.getElementById("box" + id);
-        var boxW = parseInt(box.style.width, 10);
-        var boxH = parseInt(box.style.height, 10);
+    var submit = function (title, titleKana, explain, radioShikaku, radioRing, x, y) {
+        var msg = '';
+        var flag = false;
+        var pt_name = convertHTMLChars(title.value);
+        var pt_name2 = convertHTMLChars(titleKana.value);
+        var pt_explain = convertHTMLChars(explain.value);
+        var ps_x = parseInt(convertHTMLChars(x), 10);
+        var ps_y = parseInt(convertHTMLChars(y), 10);
+        var ps_type = '';
+        if (radioShikaku !== null && convertHTMLChars(radioShikaku.checked)) {
+            ps_type = 'shikaku';
+        } else if (radioRing !== null && convertHTMLChars(radioRing.checked)) {
+            ps_type = 'ring';
+        }
 
-        // set div box
-        var canvasDiv = document.createElement('div');
-        canvasDiv.id = 'boxCopy' + id;
-        canvasDiv.style.position = 'absolute';
-        canvasDiv.style.top = '0px'; // top
-        canvasDiv.style.left = '0px'; // left
-        canvasDiv.style.width = '300px';
-        canvasDiv.style.height = '40px';
-        canvasDiv.style.zIndex = 100;
+        msg = error.checkData(pt_name, msg, '項目（１番目）');
+        msg = error.checkKana(pt_name2, msg, 'カタカナ（２番目）');
+        msg = error.checkData(pt_explain, msg, '説明（３番目）');
+        if (msg === '') {
+            flag = true;
+        }
 
-        var canvasElement = document.createElement('canvas');
-        canvasElement.id = 'eleCopy' + id;
-        canvasElement.className = 'eventBox';
-        canvasElement.style.width = '300px';
-        canvasElement.style.height = '40px';
-
-        box.appendChild(canvasDiv);
-        canvasDiv.appendChild(canvasElement);
-
-        var ctx = canvasElement.getContext('2d');
-        ctx.font = "normal bold " + 10 + "pt 'ＭＳ Ｐ明朝'";
-
-        canvasDiv.style.width = boxW + 'px';
-        canvasDiv.style.height = boxH + 'px';
-        canvasElement.style.width = boxW + 'px';
-        canvasElement.style.height = boxH + 'px';
-
-        // move event
-        canvasElement.addEventListener('mousemove', function(e) {
-
-            var rect = window.event.target.getBoundingClientRect();
-            // var rect = e.target.getBoundingClientRect();
-            var mouseX = e.clientX - rect.left;
-            var mouseY = e.clientY - rect.top;
-
-            // everyPosition
-            canvasDiv.style.top = mouseY - boxH + 'px';
-            canvasDiv.style.left = mouseX - boxW + 'px';
-        }, true);
-
-        // drow square
-        ctx.beginPath();
-        ctx.clearRect(0, 0, 300, 150);
-        ctx.strokeStyle = '#ffa500';
-        ctx.lineWidth = 14;
-        ctx.strokeRect(0, 0, 300, 150);
-
-        // drow text
-        ctx.scale(300 / boxW, 150 / 20);
-        ctx.translate(0, -2);
-        ctx.fillStyle = '#000000';
-        ctx.fillText(text, 10, 18);
-        ctx.translate(0, 2);
-        ctx.scale(boxW / 300, 20 / 150);
+        return {
+            flag: flag,
+            msg: msg,
+            pt_name: pt_name,
+            pt_name2: pt_name2,
+            pt_explain: pt_explain,
+            ps_type: ps_type,
+            ps_x: ps_x,
+            ps_y: ps_y
+        };
     };
-*/
+
+    // tag block
+    var convertHTMLChars = function (str) {
+        if (typeof(str) === 'string') {
+            return str.replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+        } else {
+            return str;
+        }
+    };
+
+    // kana check
+    var isKana = function (str) {
+        if (typeof(str) === 'string' && str.match(/^[\u30A0-\u30FF]+$/)) {
+            return true;
+        } else {
+            return false;
+        }
+    };
 
     // mouse out event
     var setFrame = function (ele, position, modType, color) {
@@ -432,41 +791,57 @@
             eventsCallBack(e, canvasDiv, function (x, y) {
                 // leftTop
                 mouseOut(canvasElement, e, events, callback, 1);
-                events.mousemoveLeftTop(canvasElement, x, y);
+                if (typeof(events.mousemoveLeftTop) === 'function') {
+                    events.mousemoveLeftTop(canvasElement, x, y);
+                }
                 callback.mousemoveLeftTop(x, y);
             }, function (x, y) {
                 // leftBottom
                 mouseOut(canvasElement, e, events, callback, 2);
-                events.mousemoveLeftBottom(canvasElement, x, y);
+                if (typeof(events.mousemoveLeftBottom) === 'function') {
+                    events.mousemoveLeftBottom(canvasElement, x, y);
+                }
                 callback.mousemoveLeftBottom(x, y);
             }, function (x, y) {
                 // rightTop
                 mouseOut(canvasElement, e, events, callback, 3);
-                events.mousemoveRightTop(canvasElement, x, y);
+                if (typeof(events.mousemoveRightTop) === 'function') {
+                    events.mousemoveRightTop(canvasElement, x, y);
+                }
                 callback.mousemoveRightTop(x, y);
             }, function (x, y) {
                 // rightBottom
                 mouseOut(canvasElement, e, events, callback, 4);
-                events.mousemoveRightBottom(canvasElement, x, y);
+                if (typeof(events.mousemoveRightBottom) === 'function') {
+                    events.mousemoveRightBottom(canvasElement, x, y);
+                }
                 callback.mousemoveRightBottom(x, y);
             }, function (x, y) {
                 // middleTop
                 mouseOut(canvasElement, e, events, callback, 5);
-                events.mousemoveMiddleTop(canvasElement, x, y);
+                if (typeof(events.mousemoveMiddleTop) === 'function') {
+                    events.mousemoveMiddleTop(canvasElement, x, y);
+                }
                 callback.mousemoveMiddleTop(x, y);
             }, function (x, y) {
                 // middleBottom
                 mouseOut(canvasElement, e, events, callback, 6);
-                events.mousemoveMiddleBottom(canvasElement, x, y);
+                if (typeof(events.mousemoveMiddleBottom) === 'function') {
+                    events.mousemoveMiddleBottom(canvasElement, x, y);
+                }
                 callback.mousemoveMiddleBottom(x, y);
             }, function (x, y) {
                 // elsePosition
                 mouseOut(canvasElement, e, events, callback, 7);
-                events.mousemoveElsePosition(canvasElement, x, y);
+                if (typeof(events.mousemoveElsePosition) === 'function') {
+                    events.mousemoveElsePosition(canvasElement, x, y);
+                }
                 callback.mousemoveElsePosition(x, y);
             }, function (x, y) {
                 // everyPosition
-                events.mousemoveEveryPosition(canvasElement, x, y);
+                if (typeof(events.mousemoveEveryPosition) === 'function') {
+                    events.mousemoveEveryPosition(canvasElement, x, y);
+                }
                 callback.mousemoveEveryPosition(x, y);
             });
         }, true);
@@ -478,29 +853,45 @@
 
                 eventsCallBack(e, canvasDiv, function (x, y) {
                     // leftTop
-                    events.mousedownLeftTop(canvasElement, x, y);
+                    if (typeof(events.mousedownLeftTop) === 'function') {
+                        events.mousedownLeftTop(canvasElement, x, y);
+                    }
                 }, function (x, y) {
                     // leftBottom
-                    events.mousedownLeftBottom(canvasElement, x, y);
+                    if (typeof(events.mousedownLeftBottom) === 'function') {
+                        events.mousedownLeftBottom(canvasElement, x, y);
+                    }
                 }, function (x, y) {
                     // rightTop
-                    events.mousedownRightTop(canvasElement, x, y);
+                    if (typeof(events.mousedownRightTop) === 'function') {
+                        events.mousedownRightTop(canvasElement, x, y);
+                    }
                 }, function (x, y) {
                     // rightBottom
-                    events.mousedownRightBottom(canvasElement, x, y);
+                    if (typeof(events.mousedownRightBottom) === 'function') {
+                        events.mousedownRightBottom(canvasElement, x, y);
+                    }
                     callback.mousedownRightBottom(x, y);
                 }, function (x, y) {
                     // middleTop
-                    events.mousedownMiddleTop(canvasElement, x, y);
+                    if (typeof(events.mousedownMiddleTop) === 'function') {
+                        events.mousedownMiddleTop(canvasElement, x, y);
+                    }
                 }, function (x, y) {
                     // middleBottom
-                    events.mousedownMiddleBottom(canvasElement, x, y);
+                    if (typeof(events.mousedownMiddleBottom) === 'function') {
+                        events.mousedownMiddleBottom(canvasElement, x, y);
+                    }
                 }, function (x, y) {
                     // elsePosition
-                    events.mousedownElsePosition(canvasElement, x, y);
+                    if (typeof(events.mousedownElsePosition) === 'function') {
+                        events.mousedownElsePosition(canvasElement, x, y);
+                    }
                 }, function (x, y) {
                     // everyPosition
-                    events.mousedownEveryPosition(canvasElement, x, y);
+                    if (typeof(events.mousedownEveryPosition) === 'function') {
+                        events.mousedownEveryPosition(canvasElement, x, y);
+                    }
                 });
             }
         }, true);
@@ -510,28 +901,44 @@
 
             eventsCallBack(e, canvasDiv, function (x, y) {
                 // leftTop
-                events.mouseupLeftTop(canvasElement, x, y);
+                if (typeof(events.mouseupLeftTop) === 'function') {
+                    events.mouseupLeftTop(canvasElement, x, y);
+                }
             }, function (x, y) {
                 // leftBottom
-                events.mouseupLeftBottom(canvasElement, x, y);
+                if (typeof(events.mouseupLeftBottom) === 'function') {
+                    events.mouseupLeftBottom(canvasElement, x, y);
+                }
             }, function (x, y) {
                 // rightTop
-                events.mouseupRightTop(canvasElement, x, y);
+                if (typeof(events.mouseupRightTop) === 'function') {
+                    events.mouseupRightTop(canvasElement, x, y);
+                }
             }, function (x, y) {
                 // rightBottom
-                events.mouseupRightBottom(canvasElement, x, y);
+                if (typeof(events.mouseupRightBottom) === 'function') {
+                    events.mouseupRightBottom(canvasElement, x, y);
+                }
             }, function (x, y) {
                 // middleTop
-                events.mouseupMiddleTop(canvasElement, x, y);
+                if (typeof(events.mouseupMiddleTop) === 'function') {
+                    events.mouseupMiddleTop(canvasElement, x, y);
+                }
             }, function (x, y) {
                 // middleBottom
-                events.mouseupMiddleBottom(canvasElement, x, y);
+                if (typeof(events.mouseupMiddleBottom) === 'function') {
+                    events.mouseupMiddleBottom(canvasElement, x, y);
+                }
             }, function (x, y) {
                 // elsePosition
-                events.mouseupElsePosition(canvasElement, x, y);
+                if (typeof(events.mouseupElsePosition) === 'function') {
+                    events.mouseupElsePosition(canvasElement, x, y);
+                }
             }, function (x, y) {
                 // everyPosition
-                events.mouseupEveryPosition(canvasElement, x, y);
+                if (typeof(events.mouseupEveryPosition) === 'function') {
+                    events.mouseupEveryPosition(canvasElement, x, y);
+                }
             });
         }, true);
 
@@ -540,28 +947,44 @@
 
             eventsCallBack(e, canvasDiv, function (x, y) {
                 // leftTop
-                events.clickRightLeftTop(canvasElement, x, y);
+                if (typeof(events.clickRightLeftTop) === 'function') {
+                    events.clickRightLeftTop(canvasElement, x, y);
+                }
             }, function (x, y) {
                 // leftBottom
-                events.clickRightLeftBottom(canvasElement, x, y);
+                if (typeof(events.clickRightLeftBottom) === 'function') {
+                    events.clickRightLeftBottom(canvasElement, x, y);
+                }
             }, function (x, y) {
                 // rightTop
-                events.clickRightRightTop(canvasElement, x, y);
+                if (typeof(events.clickRightRightTop) === 'function') {
+                    events.clickRightRightTop(canvasElement, x, y);
+                }
             }, function (x, y) {
                 // rightBottom
-                events.clickRightRightBottom(canvasElement, x, y);
+                if (typeof(events.clickRightRightBottom) === 'function') {
+                    events.clickRightRightBottom(canvasElement, x, y);
+                }
             }, function (x, y) {
                 // middleTop
-                events.clickRightMiddleTop(canvasElement, x, y);
+                if (typeof(events.clickRightMiddleTop) === 'function') {
+                    events.clickRightMiddleTop(canvasElement, x, y);
+                }
             }, function (x, y) {
                 // middleBottom
-                events.clickRightMiddleBottom(canvasElement, x, y);
+                if (typeof(events.clickRightMiddleBottom) === 'function') {
+                    events.clickRightMiddleBottom(canvasElement, x, y);
+                }
             }, function (x, y) {
                 // elsePosition
-                events.clickRightElsePosition(canvasElement, x, y);
+                if (typeof(events.clickRightElsePosition) === 'function') {
+                    events.clickRightElsePosition(canvasElement, x, y);
+                }
             }, function (x, y) {
                 // everyPosition
-                events.clickRightEveryPosition(canvasElement, x, y);
+                if (typeof(events.clickRightEveryPosition) === 'function') {
+                    events.clickRightEveryPosition(canvasElement, x, y);
+                }
                 callback.clickRightEveryPosition(x, y);
             });
         });
@@ -756,28 +1179,42 @@
 
             switch (this.mouseField) {
                 case 1:
-                    events.mouseoutLeftTop(canvasElement);
+                    if (typeof(events.mouseoutLeftTop) === 'function') {
+                        events.mouseoutLeftTop(canvasElement);
+                    }
                     break;
                 case 2:
-                    events.mouseoutLeftBottom(canvasElement);
+                    if (typeof(events.mouseoutLeftBottom) === 'function') {
+                        events.mouseoutLeftBottom(canvasElement);
+                    }
                     break;
                 case 3:
-                    events.mouseoutRightTop(canvasElement);
+                    if (typeof(events.mouseoutRightTop) === 'function') {
+                        events.mouseoutRightTop(canvasElement);
+                    }
                     callback.mouseoutRightTop();
                     break;
                 case 4:
-                    events.mouseoutRightBottom(canvasElement);
+                    if (typeof(events.mouseoutRightBottom) === 'function') {
+                        events.mouseoutRightBottom(canvasElement);
+                    }
                     callback.mouseoutRightBottom();
                     break;
                 case 5:
-                    events.mouseoutMiddleTop(canvasElement);
+                    if (typeof(events.mouseoutMiddleTop) === 'function') {
+                        events.mouseoutMiddleTop(canvasElement);
+                    }
                     break;
                 case 6:
-                    events.mouseoutMiddleBottom(canvasElement);
+                    if (typeof(events.mouseoutMiddleBottom) === 'function') {
+                        events.mouseoutMiddleBottom(canvasElement);
+                    }
                     callback.mouseoutMiddleBottom();
                     break;
                 case 7:
-                    events.mouseoutElsePosition(canvasElement);
+                    if (typeof(events.mouseoutElsePosition) === 'function') {
+                        events.mouseoutElsePosition(canvasElement);
+                    }
                     break;
             }
 
@@ -785,7 +1222,9 @@
 
             switch (field) {
                 case 0:
-                    events.mouseoutEveryPosition(canvasElement);
+                    if (typeof(events.mouseoutEveryPosition) === 'function') {
+                        events.mouseoutEveryPosition(canvasElement);
+                    }
                     callback.mouseoutEveryPosition();
                     break;
             }

@@ -30,3 +30,16 @@ a {
     color: rgba(255, 255, 255, 0);
 }
 
+/* editor */
+#editor {
+    width: 500px;
+}
+#editor #editorClose {
+    float: right;
+    cursor: pointer;
+}
+#editor #editorAdd {
+    cursor: pointer;
+}
+
+

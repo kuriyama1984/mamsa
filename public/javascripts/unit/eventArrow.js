@@ -86,21 +86,21 @@
         * @param {string} tag id
         * @param {number} position x
         * @param {number} position y
-        * @param {string} type: view or mod
+        * @param {string} modType: view or mod
         * @param {object} callback with events
         */
-        set: function (disp, id, x1, y1, x2, y2, type, events) {
+        set: function (disp, id, x1, y1, x2, y2, symbol, modType, events) {
             var posX = (x1 + x2) / 2 - divWidth / 2;
             var posY = (y1 + y2) / 2 - divHeight / 2;
             var rotate = Math.atan2(x2 - x1, y2 - y1) * -1;
-            var canvas = createCanvas(disp, id, posX, posY, rotate, type, events);
+            var canvas = createCanvas(disp, id, posX, posY, rotate, symbol, modType, events);
             this.each = culcPosition(id, posX, posY);
         }
     };
 
     // mouse out event
-    var createCanvas = function (disp, id, left, top, rotate, modType, events) {
-
+    var createCanvas = function (disp, id, left, top, rotate, symbol, modType, events) {
+        var imgObj = clone(arrowImage);
         var out = {};
         var mouseEnterFlag = true;
 
@@ -133,7 +133,7 @@
             eventsCallBack(e, canvasDiv, function (x, y) {
 
                 // mouse move event
-                // setArrow(context, arrowImage.yellow, rotate);
+                // setArrow(context, imgObj.yellow, rotate);
                 console.log('mouse move arrow');
                 // event callback
                 if (typeof(events.mousemove) === 'function') {
@@ -143,7 +143,7 @@
                 // mouse enter event
                 if (mouseEnterFlag) {
                     mouseEnterFlag = false;
-                    setArrow(context, arrowImage.yellow, rotate);
+                    setArrow(context, imgObj.yellow, (symbol === 'arrow' ? rotate : 0));
                     console.log('mouse enter arrow');
                     // event callback
                     if (typeof(events.mouseenter) === 'function') {
@@ -198,7 +198,7 @@
 
             eventsCallBack(e, canvasDiv, function (x, y) {
                 mouseEnterFlag = true;
-                setArrow(context, arrowImage.blue, rotate);
+                setArrow(context, imgObj.blue, (symbol === 'arrow' ? rotate : 0));
                 console.log('mouse out arrow');
                 // event callback
                 if (typeof(events.mouseout) === 'function') {
@@ -208,12 +208,12 @@
         }, true);
 
         // fix picture
-        arrowImage.red = getImage(canvasElement, '#ff0000');
-        arrowImage.yellow = getImage(canvasElement, '#ffa500');
-        arrowImage.blue = getImage(canvasElement, '#0000ff');
+        imgObj.red = symbol === 'arrow' ? getImageArrow(canvasElement, '#ff0000') : getImageCircle(canvasElement, '#ff0000');
+        imgObj.yellow = symbol === 'arrow' ? getImageArrow(canvasElement, '#ffa500') : getImageCircle(canvasElement, '#ffa500');
+        imgObj.blue = symbol === 'arrow' ? getImageArrow(canvasElement, '#0000ff') : getImageCircle(canvasElement, '#0000ff');
 
         // view arrow
-        setArrow(context, arrowImage.blue, rotate);
+        setArrow(context, imgObj.blue, (symbol === 'arrow' ? rotate : 0));
 
         out.ctx = context;
         out.div = canvasDiv;
@@ -221,7 +221,7 @@
         return out;
     };
 
-    var getImage = function (canvasElement, color) {
+    var getImageArrow = function (canvasElement, color) {
         var context = canvasElement.getContext('2d');
         context.translate(150, 75);
         context.beginPath();
@@ -242,6 +242,21 @@
         context.stroke();
         context.translate(-150, -75);
 
+        return canvasElement.toDataURL();
+    };
+
+    var getImageCircle = function (canvasElement, color) {
+        var context = canvasElement.getContext('2d');
+        context.translate(150, 75);
+        context.scale(1, 1 / 2);
+
+        context.beginPath();
+        context.fillStyle = color;
+        context.arc(0, 0, 40, 0, 2 * Math.PI, false);
+        context.fill();
+
+        context.scale(1, 2);
+        context.translate(-150, -75);
         return canvasElement.toDataURL();
     };
 
@@ -270,9 +285,9 @@
     // culcation eventArrow position
     var culcPosition = function (id, left, top) {
 
-        var CanvasDiv = document.getElementById('arrow' + id);
-        var width = parseInt(CanvasDiv.style.width, 10);
-        var height = parseInt(CanvasDiv.style.height, 10);
+        var canvasDiv = document.getElementById('arrow' + id);
+        var width = parseInt(canvasDiv.style.width, 10);
+        var height = parseInt(canvasDiv.style.height, 10);
 
         var each = eventArrow.prototype.each;
         each = cloneRecurcive(each); // for avoiding reference

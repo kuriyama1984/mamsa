@@ -20,6 +20,7 @@
     var canvas = null; // canvas div element
     var context = null; // canvas context
     var dragID = {flag: false, id: '', head: '', w: 0, h: 0}; // copy box id just dragging
+    var dragCircleID = {flag: false, id: '', head: '', w: 0, h: 0}; // copy box id just dragging
     var startX = 0; // mousedown x
     var startY = 0; // mousedown y
     var startId = ''; // mousedown id
@@ -40,12 +41,26 @@
     //  load util and unit classes
     // -----------------------------------
     var background = Object.create(mamsa.background.prototype);
+    var eventCircle = Object.create(mamsa.eventCircle.prototype);
 
     // for avoiding reference
     var clone = function (obj) {
         var object = {};
         for (var i in obj) {
             object[i] = obj[i];
+        }
+        return object;
+    };
+
+    // for avoiding reference
+    var cloneRecurcive = function (obj) {
+        var object = {};
+        for (var i in obj) {
+            if (typeof(obj[i]) === 'object') {
+                object[i] = cloneRecurcive(obj[i]);
+            } else {
+                object[i] = obj[i];
+            }
         }
         return object;
     };
@@ -78,9 +93,10 @@
 
             mousemove : function (x, y) {
                 resetBackground();
-                showLine();
+                showBack(undefined, undefined, undefined, false);
                 drowLine(null, null, x, y, isLine, lineColor.over);
                 moveCopy(x, y);
+                showCircleLine(x, y);
             },
             mousedown : function (x, y) {
 
@@ -88,7 +104,7 @@
             mouseup : function (x, y) {
                 isLine = false; // finish drow line
                 resetEventBoxColor();
-                // reset drag id
+                // reset drag id when event box moving
                 if (dragID.flag) {
                     dragID.flag = false;
                     allEvents(true);
@@ -108,9 +124,47 @@
                     showEventBox();
                     showLineArrow();
                 }
+                // reset circle
+                if (dragCircleID.flag) {
+                    dragCircleID.flag = false;
+
+                    // replace and set data
+                    var database = getDatabase(dragCircleID.id);
+                    database = replaceDatabase(database, 'x', x - dragCircleID.w);
+                    database = replaceDatabase(database, 'y', y - dragCircleID.h);
+                    databases = replaceDatabases(dragCircleID.id, database);
+
+                    // callback to client.js
+                    clientCallbacks.saveLine(databases);
+
+                    // show new map
+                    resetAll();
+                    showEventBox();
+                    showLineArrow();
+                }
             },
             dblclick : function (x, y) {
+                var eventBox = Object.create(mamsa.eventBox.prototype);
+                eventBox.create('mapObj', getNextId(), x, y, function (result) {
+                    var newDb = {
+                        id: getNextId(),
+                        type: 'eventbox',
+                        x: x,
+                        y: y,
+                        title: result.pt_name,
+                        titleKana: result.pt_name2,
+                        text: result.pt_explain,
+                        from: '',
+                        to: ''
+                    };
+                    databases.push(newDb);
+                    clientCallbacks.save(databases);
 
+                    // show new map
+                    resetAll();
+                    showEventBox();
+                    showLineArrow();
+                });
             },
             clickRight : function (x, y) {
 
@@ -166,6 +220,24 @@
                 return clone(databases[i]);
             }
         }
+    };
+
+    // get database form id
+    var setDatabase = function (id, database) {
+        for (var i = 0; i < databases.length; i++) {
+            if (databases[i].id === id) {
+                databases[i] = database;
+            }
+        }
+    };
+
+    // get next id
+    var getNextId = function () {
+        var idSplit = databases[databases.length - 1].id.split('_');
+        var idNum = parseInt(idSplit[1], 10);
+        idNum += 1;
+        var newId = idSplit[0] + '_' + idNum;
+        return newId;
     };
 
     // replace key to value
@@ -224,14 +296,15 @@
             // set eventBox
             if (databases[i].type === 'eventbox') {
                 var db = databases[i];
-                setEventBox(db.id, db.x, db.y, db.title, db.text, 'mod', {
+                setEventBox(db.id, db.x, db.y, db.title, db.titleKana, db.text, 'mod', {
                     saveLine: function (startId, endId) {
                         var newDb = {
-                            id: '0008',
+                            id: getNextId(),
                             type: 'line',
                             x: 0,
                             y: 0,
                             title: '',
+                            titleKana: '',
                             text: '',
                             from: startId,
                             to: endId
@@ -245,13 +318,14 @@
     };
 
     var showLineArrow = function () {
-        showLine(function (database, fromXBC, fromYBC, toXTC, toYTC) {
-            setArrow(database, fromXBC, fromYBC, toXTC, toYTC);
-        });
+        showBack(function (database, fromXBC, fromYBC, toXTC, toYTC) {
+            setArrow(database, fromXBC, fromYBC, toXTC, toYTC, database.type);
+        }, undefined, undefined, true);
     };
 
-    var showLine = function (setArrow, targets, callback) {
+    var showBack = function (setArrow, targets, callback, circleFlag) {
         resetBackground();
+        showCircle(circleFlag);
         for (var i = 0; i < databases.length; i++) {
             // check target id
             var targetsFlag = false;
@@ -303,8 +377,8 @@
                 // single line
                 if (fromYBC < toYTC) {
                     drowLine(fromXBC, fromYBC, toXTC, toYTC, true, color);
-                    if (databases[i].type === 'arrow' && typeof(setArrow) === 'function') {
-                        setArrow(databases[i], fromXBC, fromYBC, toXTC, toYTC);
+                    if (typeof(setArrow) === 'function') {
+                        setArrow(databases[i], fromXBC, fromYBC, toXTC, toYTC, databases[i].type);
                     }
                 } else {
                     var posRight = fromXCR + (fromYBC - fromYCR);
@@ -314,10 +388,47 @@
                     drowLine(fromXCR, fromYCR, posRight, fromYCR, true, color);
                     drowLine(posRight, fromYCR, posRight, toYCR, true, color);
                     drowLine(toXCR, toYCR, posRight, toYCR, true, color);
-                    if (databases[i].type === 'arrow' && typeof(setArrow) === 'function') {
-                        setArrow(databases[i], posRight, fromYCR, posRight, toYCR);
+                    if (typeof(setArrow) === 'function') {
+                        setArrow(databases[i], posRight, fromYCR, posRight, toYCR, databases[i].type);
                     }
                 }
+            }
+        }
+    };
+
+    var showCircleLine = function (x, y) {
+        if (dragCircleID.flag) {
+            var s = 1;
+            for (var i = 0; i < databases.length; i++) {
+                if (databases[i].type === 'circle' && databases[i].id === dragCircleID.id) {
+                    var database = databases[i];
+                    eventCircle.line(context, database, s, x, y, 'rightBottom');
+                }
+            }
+        }
+    };
+
+    var showCircle = function (flag) {
+        var s = 1;
+        for (var i = 0; i < databases.length; i++) {
+            if (databases[i].type === 'circle') {
+                var database = databases[i];
+                eventCircle.set(context, database, s, 'mapObj', 'mod', flag, {
+                    mouseoutRightBottom : function () {
+                        resetEventBoxColor();
+                    },
+                    mousedownRightBottom : function (canvasElement, x, y, database) {
+                        dragCircleID = eventCircle.copy(context, database, s, 'mapObj', 'rightBottom');
+                        allEvents(false);
+                    },
+                    mousedownMiddleBottom : function (canvasElement, x, y, database) {
+                        dragCircleID = eventCircle.copy(context, database, s, 'mapObj', 'middleBottom');
+                        allEvents(false);
+                    },
+                    mousemoveEveryPosition : function (canvasElement, x, y, database) {
+                        eventCircle.lineOnly(context, database, s, x, y, 'rightBottom');
+                    }
+                });
             }
         }
     };
@@ -330,40 +441,27 @@
         }
     };
 
-    var setArrow = function (database, x1, y1, x2, y2) {
+    var setArrow = function (database, x1, y1, x2, y2, symbol) {
         var eventArrow = Object.create(mamsa.eventArrow.prototype);
 
         // set event
-        eventArrow.set('mapObj', database.id, x1, y1, x2, y2, 'mod', {
+        eventArrow.set('mapObj', database.id, x1, y1, x2, y2, symbol, 'mod', {
             mouseenter : function (canvasElement, x, y) {
-                console.log('mousemove ------' + canvasElement +'_'+ x +'_'+ y);
-
-
                 // lineColor.base = '#ffa500';
-                showLine(null, [database.id], function (id, eventBox) {
-                    console.log(id);
-                    console.log(eventBox);
+                showBack(null, [database.id], function (id, eventBox) {
                     eventBox.changeColor(true, '#ffa500');
-                });
+                }, false);
             },
             mouseout : function (canvasElement, x, y) {
-                console.log('mousemove ------' + canvasElement +'_'+ x +'_'+ y);
-
-
                 // lineColor.base = '#ffa500';
-                showLine(null, [database.id], function (id, eventBox) {
-                    console.log(id);
-                    console.log(eventBox);
+                showBack(null, [database.id], function (id, eventBox) {
                     eventBox.changeColor(false, '#0000ff');
-                });
+                }, false);
             }
         });
-
-        // console.log(eventArrow.each);
-
     };
 
-    var setEventBox = function (id, x1, y1, text, textPop, type, callbacks) {
+    var setEventBox = function (id, x1, y1, text, titleKana, textPop, type, callbacks) {
         callbacks = clone(callbacks);
 
         // set clever eventBox type1
@@ -407,6 +505,23 @@
             },
             mousedownRightTop : function (canvasElement, x2, y2) {
                 console.log('mousedownRightTop');
+                eventBox.edit('mapObj', id, x1, y1, text, titleKana, textPop, function (result) {
+                    var db = getDatabase(id);
+                    // update data
+                    if (result.flag) {
+                        db.x = result.ps_x;
+                        db.y = result.ps_y;
+                        db.title = result.pt_name;
+                        db.titleKana = result.pt_name2;
+                        db.text = result.pt_explain;
+                        setDatabase(id, db);
+
+                        // show new map
+                        resetAll();
+                        showEventBox();
+                        showLineArrow();
+                    }
+                });
             },
             clickRightRightTop : function (canvasElement, x2, y2) {
                 console.log('clickRightRightTop');
@@ -420,19 +535,10 @@
 
             mousemoveRightBottom : function (canvasElement, x2, y2) {
                 console.log('mousemoveRightBottom');
-                var box = document.getElementById("box" + id);
-                var boxW = parseInt(box.style.width, 10);
-                var boxH = parseInt(box.style.height, 10);
-                console.log(boxW +'_'+ boxH);
             },
             mousedownRightBottom : function (canvasElement, x2, y2) {
                 console.log('mousedownRightBottom');
-
-
                 dragID = eventBox.copy('mapObj', id, x1, y1, text);
-
-
-
                 allEvents(false);
             },
             clickRightRightBottom : function (canvasElement, x2, y2) {
@@ -527,7 +633,7 @@
                 isLine = false; // finish drow line
                 // reset background map
                 resetBackground();
-                showLine();
+                showBack(undefined, undefined, undefined, false);
             },
             mouseoutEveryPosition : function (canvasElement, x2, y2) {
                 // console.log('mouseoutEveryPosition');
